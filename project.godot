@@ -19,10 +19,15 @@ config/name="The Temple of Time"
 run/main_scene="res://scene/state/Gameplay.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Global="*res://scene/Global.gd"
+
 [display]
 
 window/size/width=800
 window/size/height=500
+window/size/resizable=false
 window/stretch/mode="2d"
 window/stretch/aspect="keep"
 

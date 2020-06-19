@@ -1,14 +1,24 @@
 extends "res://scene/entity/Entity.gd"
 
-func _ready() -> void:
-	set_process_input(true)
+signal tick
 
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("up"):
-		move_up()
-	elif event.is_action_pressed("down"):
-		move_down()
-	elif event.is_action_pressed("left"):
-		move_left()
-	elif event.is_action_pressed("right"):
-		move_right()
+func _ready() -> void:
+	set_process(true)
+
+func _process(delta: float) -> void:
+	check_move()
+
+func check_move() -> void:
+	if !$Tween.is_active():
+		if Input.is_action_pressed("up"):
+			move_up()
+			emit_signal("tick")
+		elif Input.is_action_pressed("down"):
+			move_down()
+			emit_signal("tick")
+		elif Input.is_action_pressed("left"):
+			move_left()
+			emit_signal("tick")
+		elif Input.is_action_pressed("right"):
+			move_right()
+			emit_signal("tick")
