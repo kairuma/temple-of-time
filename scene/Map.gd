@@ -2,7 +2,7 @@ extends Node2D
 
 const WIDTH: int = 64
 const HEIGHT: int = 64
-const ROOM_ITERATIONS: int = 1
+const ROOM_ITERATIONS: int = 256
 const MONTH_NAME: Dictionary = {
 	1: "January", 2: "February", 3: "March", 4: "April", 
 	5: "May", 6: "June", 7: "July", 8: "August", 
@@ -20,20 +20,16 @@ var hour: int = 0
 var day: int = 1
 var month: int = 1
 var year: int = 2020
-var map_data: PoolIntArray = []
 
 func _ready() -> void:
 	randomize()
 	$Player.connect("tick", self, "update_entities")
 	set_start_time()
-	for i in 64:
-		gen_map()
+	gen_map()
 
 func gen_map() -> void:
 	var region: Array = []
-	for i in WIDTH * HEIGHT:
-		map_data.append(0)
-	for q in range(1):
+	for i in range(ROOM_ITERATIONS):
 		var rect_w: int = 3 + (randi() % 7) * 2
 		var rect_x: int = 1 + (randi() % ((WIDTH - rect_w - 1) / 2)) * 2
 		var rect_h: int = 3 + (randi() % 7) * 2
@@ -46,11 +42,31 @@ func gen_map() -> void:
 			j += 1
 		if is_valid:
 			region.append([rect_x, rect_y, rect_w, rect_h])
-	print(region)
-	for r in region:
-		for y in r[3]:
-			for x in r[2]:
-				$TileMap.set_cell(r[0] + x, r[1] + y, 0)
+	var i: int = 0
+	while i < region.size():
+		var add_connection: bool = false
+		for y in region[i][3]:
+			for x in region[i][2]:
+				add_connection = $TileMap.get_cell(region[i][0] + x, region[i][1] + y) != 0
+				$TileMap.set_cell(region[i][0] + x, region[i][1] + y, 0)
+		i += 1
+		if add_connection and i < region.size():
+			var start_x: int = region[i - 1][0] + randi() % region[i - 1][2]
+			var start_y: int = region[i - 1][1] + randi() % region[i - 1][3]
+			var end_x: int = region[i][0] + randi() % region[i][2]
+			var end_y: int = region[i][1] + randi() % region[i][3]
+			while start_x < end_x:
+				$TileMap.set_cell(start_x, start_y, 0)
+				start_x += 1
+			while start_x > end_x:
+				$TileMap.set_cell(start_x, start_y, 0)
+				start_x -= 1
+			while start_y < end_y:
+				$TileMap.set_cell(start_x, start_y, 0)
+				start_y += 1
+			while start_y > end_y:
+				$TileMap.set_cell(start_x, start_y, 0)
+				start_y -= 1
 
 func update_time_hud() -> void:
 	var time_str: String = ""
@@ -58,16 +74,16 @@ func update_time_hud() -> void:
 	if year < 0:
 		year_str = "%d BC" % -year
 	if Global.display_hour_24():
-		time_str = "%s %02d, %s; %02d : %02d : %02d" % [MONTH_NAME[month], day, year_str, hour, minute, second]
+		time_str = "%s %02d, %s\n%02d : %02d : %02d" % [MONTH_NAME[month], day, year_str, hour, minute, second]
 	else:
 		if hour == 0:
-			time_str = "%s %02d, %s; 12 : %02d : %02d AM" % [MONTH_NAME[month], day, year_str, minute, second]
+			time_str = "%s %02d, %s\n12 : %02d : %02d AM" % [MONTH_NAME[month], day, year_str, minute, second]
 		elif hour < 12:
-			time_str = "%s %02d, %s; %02d : %02d : %02d AM" % [MONTH_NAME[month], day, year_str, hour, minute, second]
+			time_str = "%s %02d, %s\n%02d : %02d : %02d AM" % [MONTH_NAME[month], day, year_str, hour, minute, second]
 		elif hour == 12:
-			time_str = "%s %02d, %s; 12 : %02d : %02d PM" % [MONTH_NAME[month], day, year_str, minute, second]
+			time_str = "%s %02d, %s\n12 : %02d : %02d PM" % [MONTH_NAME[month], day, year_str, minute, second]
 		else:
-			time_str = "%s %02d, %s; %02d : %02d : %02d PM" % [MONTH_NAME[month], day, year_str, hour - 12, minute, second]
+			time_str = "%s %02d, %s\n%02d : %02d : %02d PM" % [MONTH_NAME[month], day, year_str, hour - 12, minute, second]
 	$CanvasLayer/MarginContainer/TimeLabel.set_text(time_str)
 
 func set_start_time() -> void:

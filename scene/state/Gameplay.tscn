@@ -1,16 +1,7 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=2]
 
 [ext_resource path="res://scene/Map.tscn" type="PackedScene" id=1]
-[ext_resource path="res://icon.png" type="Texture" id=2]
 
 [node name="Gameplay" type="Node2D"]
-
-[node name="icon" type="Sprite" parent="."]
-position = Vector2( -120.193, -94.1825 )
-texture = ExtResource( 2 )
-
-[node name="icon2" type="Sprite" parent="."]
-position = Vector2( 108.14, 84.5125 )
-texture = ExtResource( 2 )
 
 [node name="Map" parent="." instance=ExtResource( 1 )]
