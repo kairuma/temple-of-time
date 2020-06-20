@@ -32,8 +32,8 @@ format = 1
 [node name="Entities" type="Node2D" parent="."]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-map_x = 16
-map_y = 16
+map_x = 32
+map_y = 32
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

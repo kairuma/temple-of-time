@@ -1,8 +1,8 @@
 extends Node2D
 
-const WIDTH: int = 32
-const HEIGHT: int = 32
-const ROOM_ITERATIONS: int = 256
+const WIDTH: int = 64
+const HEIGHT: int = 64
+const ROOM_ITERATIONS: int = 1024
 const MONTH_NAME: Dictionary = {
 	1: "January", 2: "February", 3: "March", 4: "April", 
 	5: "May", 6: "June", 7: "July", 8: "August", 
@@ -29,10 +29,20 @@ func _ready() -> void:
 
 func gen_map() -> void:
 	var region: Array = []
+	for i in 4:
+		var rect_w: int = 3 + (randi() % 5) * 2
+		var rect_x: int = 1 + (randi() % ((WIDTH / 2 - rect_w - 1) / 2)) * 2
+		if i % 2 == 1:
+			rect_x += WIDTH / 2
+		var rect_h: int = 3 + (randi() % 5) * 2
+		var rect_y: int = 1 + (randi() % ((HEIGHT / 2 - rect_h - 1) / 2)) * 2
+		if i > 1:
+			rect_y += HEIGHT / 2
+		region.append([rect_x, rect_y, rect_w, rect_h])
 	for i in range(ROOM_ITERATIONS):
-		var rect_w: int = 3 + (randi() % 7) * 2
+		var rect_w: int = 3 + (randi() % 5) * 2
 		var rect_x: int = 1 + (randi() % ((WIDTH - rect_w - 1) / 2)) * 2
-		var rect_h: int = 3 + (randi() % 7) * 2
+		var rect_h: int = 3 + (randi() % 5) * 2
 		var rect_y: int = 1 + (randi() % ((HEIGHT - rect_h - 1) / 2)) * 2
 		var is_valid: bool = true
 		var j: int = 0
