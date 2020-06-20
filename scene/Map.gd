@@ -44,29 +44,139 @@ func gen_map() -> void:
 			region.append([rect_x, rect_y, rect_w, rect_h])
 	var i: int = 0
 	while i < region.size():
-		var add_connection: bool = false
 		for y in region[i][3]:
 			for x in region[i][2]:
-				add_connection = $TileMap.get_cell(region[i][0] + x, region[i][1] + y) != 0
 				$TileMap.set_cell(region[i][0] + x, region[i][1] + y, 0)
 		i += 1
-		if add_connection and i < region.size():
-			var start_x: int = region[i - 1][0] + randi() % region[i - 1][2]
-			var start_y: int = region[i - 1][1] + randi() % region[i - 1][3]
-			var end_x: int = region[i][0] + randi() % region[i][2]
-			var end_y: int = region[i][1] + randi() % region[i][3]
-			while start_x < end_x:
-				$TileMap.set_cell(start_x, start_y, 0)
-				start_x += 1
-			while start_x > end_x:
-				$TileMap.set_cell(start_x, start_y, 0)
-				start_x -= 1
-			while start_y < end_y:
-				$TileMap.set_cell(start_x, start_y, 0)
-				start_y += 1
-			while start_y > end_y:
-				$TileMap.set_cell(start_x, start_y, 0)
-				start_y -= 1
+	for h in HEIGHT / 2:
+		for w in WIDTH / 2:
+			maze_gen(w * 2 + 1, h * 2 + 1, region)
+	flood_fill()
+	var dead_ends: Array = get_dead_ends()
+	while dead_ends.size() != 0:
+		for d in dead_ends:
+			$TileMap.set_cell(d[0], d[1], -1)
+		dead_ends = get_dead_ends()
+
+func is_in_room(x: int, y: int, rooms: Array) -> bool:
+	for r in rooms:
+		if x >= r[0] and x <= r[0] + r[2] and y >= r[1] and y <= r[1] + r[3]:
+			return true
+	return false
+
+func maze_gen(x: int, y: int, rooms: Array) -> void:
+	if $TileMap.get_cell(x, y) != 0:
+		$TileMap.set_cell(x, y, 0)
+		var walls: Array = []
+		if y - 2 >= 0 and $TileMap.get_cell(x, y - 2) != 0:
+			walls.append([x, y - 2])
+		if y + 2 <= HEIGHT and $TileMap.get_cell(x, y + 2) != 0:
+			walls.append([x, y + 2])
+		if x - 2 >= 0 and $TileMap.get_cell(x - 2, y) != 0:
+			walls.append([x - 2, y])
+		if x + 2 <= WIDTH and $TileMap.get_cell(x + 2, y) != 0:
+			walls.append([x + 2, y])
+		while !walls.empty():
+			var index: int = randi() % walls.size()
+			var w: Array = walls[index]
+			walls.remove(index)
+			$TileMap.set_cell(w[0], w[1], 0)
+			var needs_wall: bool = true
+			var dir: Array = [0, 1, 2, 3]
+			while needs_wall and dir.size() > 0:
+				var dir_index: int = randi() % dir.size()
+				match dir[dir_index]:
+					0:
+						if w[0] - 2 >= 0 and $TileMap.get_cell(w[0] - 2, w[1]) == 0 and !is_in_room(w[0] - 2, w[1], rooms):
+							$TileMap.set_cell(w[0] - 1, w[1], 0)
+							needs_wall = false
+					1:
+						if w[0] + 2 <= WIDTH and $TileMap.get_cell(w[0] + 2, w[1]) == 0 and !is_in_room(w[0] + 2, w[1], rooms):
+							$TileMap.set_cell(w[0] + 1, w[1], 0)
+							needs_wall = false
+					2:
+						if w[1] - 2 >= 0 and $TileMap.get_cell(w[0], w[1] - 2) == 0 and !is_in_room(w[0], w[1] - 2, rooms):
+							$TileMap.set_cell(w[0], w[1] - 1, 0)
+							needs_wall = false
+					3:
+						if w[1] + 2 <= HEIGHT and $TileMap.get_cell(w[0], w[1] + 2) == 0 and !is_in_room(w[0], w[1] + 2, rooms):
+							$TileMap.set_cell(w[0], w[1] + 1, 0)
+							needs_wall = false
+				dir.remove(dir_index)
+			if !needs_wall:
+				if w[1] - 2 >= 0 and $TileMap.get_cell(w[0], w[1] - 2) != 0 and !walls.has([w[0], w[1] - 2]):
+					walls.append([w[0], w[1] - 2])
+				if w[1] + 2 <= HEIGHT and $TileMap.get_cell(w[0], w[1] + 2) != 0 and !walls.has([w[0], w[1] + 2]):
+					walls.append([w[0], w[1] + 2])
+				if w[0] - 2 >= 0 and $TileMap.get_cell(w[0] - 2, w[1]) != 0 and !walls.has([w[0] - 2, w[1]]):
+					walls.append([w[0] - 2, w[1]])
+				if w[0] + 2 <= WIDTH and $TileMap.get_cell(w[0] + 2, w[1]) != 0 and !walls.has([w[0] + 2, w[1]]):
+					walls.append([w[0] + 2, w[1]])
+
+func flood_fill() -> void:
+	var q: Array = []
+	var visited: Array = []
+	var v: int = 0
+	for i in WIDTH * HEIGHT:
+		if $TileMap.get_cell(i % WIDTH, i / WIDTH) == 0:
+			q.append([i % WIDTH, i / WIDTH])
+			visited.append([i % WIDTH, i / WIDTH])
+			break
+	while !q.empty():
+		while !q.empty():
+			var n: Array = q.pop_front()
+			if n[0] - 1 >= 0 and !visited.has([n[0] - 1, n[1]]) and $TileMap.get_cell(n[0] - 1, n[1]) == 0:
+				q.append([n[0] - 1, n[1]])
+				visited.append([n[0] - 1, n[1]])
+			if n[0] + 1 <= WIDTH and !visited.has([n[0] + 1, n[1]]) and $TileMap.get_cell(n[0] + 1, n[1]) == 0:
+				q.append([n[0] + 1, n[1]])
+				visited.append([n[0] + 1, n[1]])
+			if n[1] - 1 >= 0 and !visited.has([n[0], n[1] - 1]) and $TileMap.get_cell(n[0], n[1] - 1) == 0:
+				q.append([n[0], n[1] - 1])
+				visited.append([n[0], n[1] - 1])
+			if n[1] + 1 <= HEIGHT and !visited.has([n[0], n[1] + 1]) and $TileMap.get_cell(n[0], n[1] + 1) == 0:
+				q.append([n[0], n[1] + 1])
+				visited.append([n[0], n[1] + 1])
+		while v < visited.size():
+			if visited[v][0] - 2 >= 0 and $TileMap.get_cell(visited[v][0] - 1, visited[v][1]) != 0 and $TileMap.get_cell(visited[v][0] - 2, visited[v][1]) == 0 and !visited.has([visited[v][0] - 2, visited[v][1]]):
+				$TileMap.set_cell(visited[v][0] - 1, visited[v][1], 0)
+				q.append([visited[v][0] - 1, visited[v][1]])
+				visited.append([visited[v][0] - 1, visited[v][1]])
+				break
+			if visited[v][0] + 2 <= WIDTH and $TileMap.get_cell(visited[v][0] + 1, visited[v][1]) != 0 and $TileMap.get_cell(visited[v][0] + 2, visited[v][1]) == 0 and !visited.has([visited[v][0] + 2, visited[v][1]]):
+				$TileMap.set_cell(visited[v][0] + 1, visited[v][1], 0)
+				q.append([visited[v][0] + 1, visited[v][1]])
+				visited.append([visited[v][0] + 1, visited[v][1]])
+				break
+			if visited[v][1] - 2 >= 0 and $TileMap.get_cell(visited[v][0], visited[v][1] - 1) != 0 and $TileMap.get_cell(visited[v][0], visited[v][1] - 2) == 0 and !visited.has([visited[v][0], visited[v][1] - 2]):
+				$TileMap.set_cell(visited[v][0], visited[v][1] - 1, 0)
+				q.append([visited[v][0], visited[v][1] - 1])
+				visited.append([visited[v][0], visited[v][1] - 1])
+				break
+			if visited[v][1] + 2 <= HEIGHT and $TileMap.get_cell(visited[v][0], visited[v][1] + 1) != 0 and $TileMap.get_cell(visited[v][0], visited[v][1] + 2) == 0 and !visited.has([visited[v][0], visited[v][1] + 2]):
+				$TileMap.set_cell(visited[v][0], visited[v][1] + 1, 0)
+				q.append([visited[v][0], visited[v][1] + 1])
+				visited.append([visited[v][0], visited[v][1] + 1])
+				break
+			v += 1
+
+func get_dead_ends() -> Array:
+	var result: Array = []
+	for y in HEIGHT:
+		for x in WIDTH:
+			if $TileMap.get_cell(x, y) == 0:
+				var neighbors: int = 0
+				if x - 1 >= 0 and $TileMap.get_cell(x - 1, y) == 0:
+					neighbors += 1
+				if x + 1 <= WIDTH and $TileMap.get_cell(x + 1, y) == 0:
+					neighbors += 1
+				if y - 1 >= 0 and $TileMap.get_cell(x, y - 1) == 0:
+					neighbors += 1
+				if y + 1 <= HEIGHT and $TileMap.get_cell(x, y + 1) == 0:
+					neighbors += 1
+				if neighbors <= 1:
+					result.append([x, y])
+	return result
 
 func update_time_hud() -> void:
 	var time_str: String = ""
