@@ -1,7 +1,7 @@
 extends Sprite
 
-const CELL_SIZE: float = 64.0
-const TURN_SPEED: float = 0.0005
+const CELL_SIZE: float = 48.0
+const TURN_SPEED: float = 0.5
 
 export(int, -1000000000, 1000000000) var map_x: int = 0 setget set_map_x
 export(int, -1000000000, 1000000000) var map_y: int = 0 setget set_map_y

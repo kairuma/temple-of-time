@@ -1,7 +1,7 @@
 extends Node2D
 
-const WIDTH: int = 64
-const HEIGHT: int = 64
+const WIDTH: int = 32
+const HEIGHT: int = 32
 const ROOM_ITERATIONS: int = 256
 const MONTH_NAME: Dictionary = {
 	1: "January", 2: "February", 3: "March", 4: "April", 
@@ -51,7 +51,8 @@ func gen_map() -> void:
 	for h in HEIGHT / 2:
 		for w in WIDTH / 2:
 			maze_gen(w * 2 + 1, h * 2 + 1, region)
-	flood_fill()
+	add_doors(region)
+	#flood_check()
 	var dead_ends: Array = get_dead_ends()
 	while dead_ends.size() != 0:
 		for d in dead_ends:
@@ -113,7 +114,40 @@ func maze_gen(x: int, y: int, rooms: Array) -> void:
 				if w[0] + 2 <= WIDTH and $TileMap.get_cell(w[0] + 2, w[1]) != 0 and !walls.has([w[0] + 2, w[1]]):
 					walls.append([w[0] + 2, w[1]])
 
-func flood_fill() -> void:
+func add_doors(rooms: Array) -> void:
+	for r in rooms:
+		var dirs: PoolIntArray = [0, 1, 2, 3]
+		if r[0] >= WIDTH - 1:
+			dirs.remove(3)
+		if r[0] <= 1:
+			dirs.remove(2)
+		if r[1] >= HEIGHT - 1:
+			dirs.remove(1)
+		if r[1] >= 1:
+			dirs.remove(0)
+		var side: int = dirs[randi() % dirs.size()]
+		if side == 0 || dirs[randi() % dirs.size()] == 0:
+			for x in r[2]:
+				if $TileMap.get_cell(r[0] + (x + r[2] / 2) % r[2], r[1] - 2) == 0:
+					$TileMap.set_cell(r[0] + (x + r[2] / 2) % r[2], r[1] - 1, 0)
+					break
+		if side == 1 || dirs[randi() % dirs.size()] == 1:
+			for x in r[2]:
+				if $TileMap.get_cell(r[0] + (x + r[2] / 2) % r[2], r[1] + r[3] + 1) == 0:
+					$TileMap.set_cell(r[0] + (x + r[2] / 2) % r[2], r[1] + r[3], 0)
+					break
+		if side == 2 || dirs[randi() % dirs.size()] == 2:
+			for y in r[3]:
+				if $TileMap.get_cell(r[0] - 2, r[1] + (y + r[3] / 2) % r[3]) == 0:
+					$TileMap.set_cell(r[0] - 1, r[1] + (y + r[3] / 2) % r[3], 0)
+					break
+		if side == 3 || dirs[randi() % dirs.size()] == 3:
+			for y in r[3]:
+				if $TileMap.get_cell(r[0] + r[2] + 1, r[1] + (y + r[3] / 2) % r[3]) == 0:
+					$TileMap.set_cell(r[0] + r[2], r[1] + (y + r[3] / 2) % r[3], 0)
+					break
+
+func flood_check() -> void:
 	var q: Array = []
 	var visited: Array = []
 	var v: int = 0

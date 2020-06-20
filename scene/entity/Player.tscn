@@ -10,5 +10,4 @@ script = ExtResource( 3 )
 
 [node name="Camera2D" type="Camera2D" parent="." index="0"]
 current = true
-zoom = Vector2( 8, 8 )
 smoothing_enabled = true

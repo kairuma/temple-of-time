@@ -9,7 +9,7 @@
 0/texture = ExtResource( 3 )
 0/tex_offset = Vector2( 0, 0 )
 0/modulate = Color( 1, 1, 1, 1 )
-0/region = Rect2( 0, 0, 65, 64 )
+0/region = Rect2( 0, 0, 48, 48 )
 0/tile_mode = 0
 0/occluder_offset = Vector2( 0, 0 )
 0/navigation_offset = Vector2( 0, 0 )
@@ -24,15 +24,16 @@
 script = ExtResource( 2 )
 
 [node name="TileMap" type="TileMap" parent="."]
-position = Vector2( -32, -32 )
+position = Vector2( -24, -24 )
 tile_set = SubResource( 1 )
+cell_size = Vector2( 48, 48 )
 format = 1
 
 [node name="Entities" type="Node2D" parent="."]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-map_x = 32
-map_y = 32
+map_x = 16
+map_y = 16
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
