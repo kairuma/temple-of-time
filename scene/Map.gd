@@ -22,30 +22,41 @@ var hour: int = 0
 var day: int = 1
 var month: int = 1
 var year: int = 2020
+var map_seed: int = 1597463007
 
 func _ready() -> void:
 	randomize()
+	map_seed = randi()
 	$Player.connect("tick", self, "update_entities")
 	set_start_time()
 	gen_map()
 
+func random_int() -> int:
+	var result: int = (1103515245 * map_seed + 12345) / 65536 % 2048
+	result = (result * 1103515245 + 12345) << 10
+	result ^= result / 65536 % 1024
+	result = (result * 1103515245 + 12345) << 10
+	result ^= result / 65536 % 1024
+	map_seed = result
+	return int(abs(result))
+
 func gen_map() -> void:
 	var region: Array = []
 	for i in 4:
-		var rect_w: int = 3 + (randi() % 5) * 2
-		var rect_x: int = 1 + (randi() % ((WIDTH / 2 - rect_w - 1) / 2)) * 2
+		var rect_w: int = 3 + (random_int() % 5) * 2
+		var rect_x: int = 1 + (random_int() % ((WIDTH / 2 - rect_w - 1) / 2)) * 2
 		if i % 2 == 1:
 			rect_x += WIDTH / 2
-		var rect_h: int = 3 + (randi() % 5) * 2
-		var rect_y: int = 1 + (randi() % ((HEIGHT / 2 - rect_h - 1) / 2)) * 2
+		var rect_h: int = 3 + (random_int() % 5) * 2
+		var rect_y: int = 1 + (random_int() % ((HEIGHT / 2 - rect_h - 1) / 2)) * 2
 		if i > 1:
 			rect_y += HEIGHT / 2
 		region.append([rect_x, rect_y, rect_w, rect_h])
 	for i in range(ROOM_ITERATIONS):
-		var rect_w: int = 3 + (randi() % 5) * 2
-		var rect_x: int = 1 + (randi() % ((WIDTH - rect_w - 1) / 2)) * 2
-		var rect_h: int = 3 + (randi() % 5) * 2
-		var rect_y: int = 1 + (randi() % ((HEIGHT - rect_h - 1) / 2)) * 2
+		var rect_w: int = 3 + (random_int() % 5) * 2
+		var rect_x: int = 1 + (random_int() % ((WIDTH - rect_w - 1) / 2)) * 2
+		var rect_h: int = 3 + (random_int() % 5) * 2
+		var rect_y: int = 1 + (random_int() % ((HEIGHT - rect_h - 1) / 2)) * 2
 		var is_valid: bool = true
 		var j: int = 0
 		while is_valid and j < region.size():
@@ -100,14 +111,14 @@ func maze_gen(x: int, y: int, rooms: Array) -> void:
 		if x + 2 <= WIDTH and $TileMap.get_cell(x + 2, y) != 0:
 			walls.append([x + 2, y])
 		while !walls.empty():
-			var index: int = randi() % walls.size()
+			var index: int = random_int() % walls.size()
 			var w: Array = walls[index]
 			walls.remove(index)
 			$TileMap.set_cell(w[0], w[1], 0)
 			var needs_wall: bool = true
 			var dir: Array = [0, 1, 2, 3]
 			while needs_wall and dir.size() > 0:
-				var dir_index: int = randi() % dir.size()
+				var dir_index: int = random_int() % dir.size()
 				match dir[dir_index]:
 					0:
 						if w[0] - 2 >= 0 and $TileMap.get_cell(w[0] - 2, w[1]) == 0 and !is_in_room(w[0] - 2, w[1], rooms):
@@ -147,23 +158,23 @@ func add_doors(rooms: Array) -> void:
 			dirs.remove(1)
 		if r[1] >= 1:
 			dirs.remove(0)
-		var side: int = dirs[randi() % dirs.size()]
-		if side == 0 || dirs[randi() % dirs.size()] == 0:
+		var side: int = dirs[random_int() % dirs.size()]
+		if side == 0 || dirs[random_int() % dirs.size()] == 0:
 			for x in r[2]:
 				if $TileMap.get_cell(r[0] + (x + r[2] / 2) % r[2], r[1] - 2) == 0:
 					$TileMap.set_cell(r[0] + (x + r[2] / 2) % r[2], r[1] - 1, 0)
 					break
-		if side == 1 || dirs[randi() % dirs.size()] == 1:
+		if side == 1 || dirs[random_int() % dirs.size()] == 1:
 			for x in r[2]:
 				if $TileMap.get_cell(r[0] + (x + r[2] / 2) % r[2], r[1] + r[3] + 1) == 0:
 					$TileMap.set_cell(r[0] + (x + r[2] / 2) % r[2], r[1] + r[3], 0)
 					break
-		if side == 2 || dirs[randi() % dirs.size()] == 2:
+		if side == 2 || dirs[random_int() % dirs.size()] == 2:
 			for y in r[3]:
 				if $TileMap.get_cell(r[0] - 2, r[1] + (y + r[3] / 2) % r[3]) == 0:
 					$TileMap.set_cell(r[0] - 1, r[1] + (y + r[3] / 2) % r[3], 0)
 					break
-		if side == 3 || dirs[randi() % dirs.size()] == 3:
+		if side == 3 || dirs[random_int() % dirs.size()] == 3:
 			for y in r[3]:
 				if $TileMap.get_cell(r[0] + r[2] + 1, r[1] + (y + r[3] / 2) % r[3]) == 0:
 					$TileMap.set_cell(r[0] + r[2], r[1] + (y + r[3] / 2) % r[3], 0)
