@@ -13,4 +13,5 @@ zoom = Vector2( 1.5, 1.5 )
 smoothing_enabled = true
 
 [node name="Sprite" type="Sprite" parent="." index="2"]
+rotation = 6.28319
 texture = ExtResource( 1 )

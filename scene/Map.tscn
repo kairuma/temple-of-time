@@ -29,7 +29,7 @@ tile_set = SubResource( 1 )
 cell_size = Vector2( 48, 48 )
 format = 1
 
-[node name="Entities" type="Node2D" parent="."]
+[node name="Entities" type="YSort" parent="."]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 map_x = 32

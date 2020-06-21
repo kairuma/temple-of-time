@@ -6,9 +6,14 @@ const TURN_SPEED: float = 0.5
 
 export(int, 0, 96) var map_x: int = 0 setget set_map_x, get_map_x
 export(int, 0, 96) var map_y: int = 0 setget set_map_y, get_map_y
-export(int, 1, 100) var hp: int = 1
 export(int, -5, 5) var strength: int = 0
 export(int, -5, 5) var agility: int = 0
+export(int, 1, 20) var level: int = 1
+export(int, -5, 5) var vitality: int = 0 setget set_vitality
+var max_hp: int = 1 setget set_max_hp
+var hp: int = 1
+var melee_attack: int = 0
+var armor_defense: int = 0
 
 export(NodePath) var map_path: NodePath
 onready var map: Node2D = get_node(map_path) setget set_map
@@ -32,19 +37,41 @@ func get_map_y() -> int:
 func set_map(m: Node2D) -> void:
 	map = m
 
-func take_damage(damage: int) -> void:
+func set_vitality(v: int) -> void:
+	vitality = v
+	set_max_hp(max(1, vitality * 5) + 10 * level / 3)
+
+func set_max_hp(h: int) -> void:
+	var old_max: int = max_hp
+	max_hp = h
+	hp = hp * max_hp / old_max
+
+func is_at(x: int, y: int) -> bool:
+	return map_x == x and map_y == y
+
+func take_damage(damage: int, source: Entity) -> void:
 	hp -= damage
+	print("%s:\t%d / %d" % [get_name(), hp, max_hp])
+	if hp <= 0:
+		queue_free()
 
 func get_weapon_damage() -> int:
-	return randi() % weapon_attack
+	if melee_attack == 0:
+		return 1
+	return (randi() % melee_attack + 1) * 5
 
-func get_ac() -> int:
+func get_defense() -> int:
 	return 10 + agility + armor_defense
 
 func attack(entity: Entity) -> void:
-	var attack_value: int = randi() % 20 + 1 + strength
-	if attack_value > entity.get_ac():
-		entity.take_damage(get_weapon_damage() + strength)
+	$AnimationPlayer.play("attack")
+	var to_hit: int = randi() % 20 + 1 + strength
+	var damage_mult: float = (21.0 - (entity.get_defense() - to_hit)) / 20.0
+	var damage: int = get_weapon_damage() + strength
+	damage *= damage_mult
+	if damage <= 0:
+		damage = 1
+	entity.take_damage(damage, self)
 
 func move_up() -> bool:
 	if map.is_ground(map_x, map_y - 1):

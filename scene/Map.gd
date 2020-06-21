@@ -14,6 +14,8 @@ const MONTH_LENGTH: Dictionary = {
 	9: 30, 10: 31, 11: 30, 12: 31
 }
 
+var sprite_class: Resource = preload("res://scene/entity/npc/Sprite.tscn")
+
 var second: int = 0
 var minute: int = 0
 var hour: int = 0
@@ -68,9 +70,16 @@ func gen_map() -> void:
 		for d in dead_ends:
 			$TileMap.set_cell(d[0], d[1], -1)
 		dead_ends = get_dead_ends()
-	var start: Array = region.back()
-	$Player.set_map_x(start[0] + start[2] / 2)
-	$Player.set_map_y(start[1] + start[3] / 2)
+	for r in region:
+		if r == region.back():
+			$Player.set_map_x(r[0] + r[2] / 2)
+			$Player.set_map_y(r[1] + r[3] / 2)
+		else:
+			var e: Entity = sprite_class.instance()
+			$Entities.add_child(e)
+			e.set_map(self)
+			e.set_map_x(r[0] + r[2] / 2)
+			e.set_map_y(r[1] + r[3] / 2)
 
 func is_in_room(x: int, y: int, rooms: Array) -> bool:
 	for r in rooms:
@@ -287,7 +296,9 @@ func increment_time() -> void:
 func is_ground(x: int, y: int) -> bool:
 	return $TileMap.get_cell(x, y) == 0
 
-func get_entity_at(x: int, y:int) -> Entity:
+func get_entity_at(x: int, y:int) -> Node:
+	if $Player.is_at(x, y):
+		return $Player
 	for e in $Entities.get_children():
 		if e.is_at(x, y):
 			return e

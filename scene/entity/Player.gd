@@ -8,8 +8,11 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	check_move()
 
+func can_move() -> bool:
+	return !$Tween.is_active() and !$AnimationPlayer.is_playing()
+
 func check_move() -> void:
-	if !$Tween.is_active():
+	if can_move():
 		if Input.is_action_pressed("up"):
 			if move_up():
 				emit_signal("tick")
