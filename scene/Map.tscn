@@ -34,6 +34,7 @@ format = 1
 [node name="Player" parent="." instance=ExtResource( 1 )]
 map_x = 32
 map_y = 32
+map_path = NodePath("..")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

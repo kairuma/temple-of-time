@@ -1,7 +1,7 @@
 extends Node2D
 
-const WIDTH: int = 64
-const HEIGHT: int = 64
+const WIDTH: int = 32
+const HEIGHT: int = 32
 const ROOM_ITERATIONS: int = 1024
 const MONTH_NAME: Dictionary = {
 	1: "January", 2: "February", 3: "March", 4: "April", 
@@ -68,6 +68,9 @@ func gen_map() -> void:
 		for d in dead_ends:
 			$TileMap.set_cell(d[0], d[1], -1)
 		dead_ends = get_dead_ends()
+	var start: Array = region.back()
+	$Player.set_map_x(start[0] + start[2] / 2)
+	$Player.set_map_y(start[1] + start[3] / 2)
 
 func is_in_room(x: int, y: int, rooms: Array) -> bool:
 	for r in rooms:
@@ -280,6 +283,15 @@ func increment_time() -> void:
 	if year < -13800000000:
 		year += 9223372023054775807
 	update_time_hud()
+
+func is_ground(x: int, y: int) -> bool:
+	return $TileMap.get_cell(x, y) == 0
+
+func get_entity_at(x: int, y:int) -> Entity:
+	for e in $Entities.get_children():
+		if e.is_at(x, y):
+			return e
+	return null
 
 func update_entities() -> void:
 	increment_time()
