@@ -1,6 +1,8 @@
 extends Node2D
 class_name Entity
 
+enum EntityID {PLAYER, SPRITE, STAIRS_UP, STAIRS_DOWN, BAKU}
+
 const CELL_SIZE: float = 48.0
 const TURN_SPEED: float = 0.5
 
@@ -10,6 +12,9 @@ export(int, -5, 5) var strength: int = 0
 export(int, -5, 5) var agility: int = 0
 export(int, 1, 20) var level: int = 1
 export(int, -5, 5) var vitality: int = 0 setget set_vitality
+export(bool) var npc: bool = false setget ,is_npc
+export(bool) var player: bool = false setget ,is_player
+export(EntityID) var id: int = EntityID.SPRITE setget ,get_id
 var max_hp: int = 1 setget set_max_hp
 var hp: int = 1
 var melee_attack: int = 0
@@ -22,6 +27,9 @@ func set_map_x(new_x: int) -> void:
 	map_x = new_x
 	$Tween.interpolate_property(self, "position", get_position(), Vector2(map_x * CELL_SIZE, map_y * CELL_SIZE), TURN_SPEED, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	$Tween.start()
+
+func get_id() -> int:
+	return id
 
 func get_map_x() -> int:
 	return map_x
@@ -49,6 +57,12 @@ func set_max_hp(h: int) -> void:
 func is_at(x: int, y: int) -> bool:
 	return map_x == x and map_y == y
 
+func is_npc() -> bool:
+	return npc
+
+func is_player() -> bool:
+	return player
+
 func take_damage(damage: int, source: Entity) -> void:
 	hp -= damage
 	print("%s:\t%d / %d" % [get_name(), hp, max_hp])
@@ -73,11 +87,16 @@ func attack(entity: Entity) -> void:
 		damage = 1
 	entity.take_damage(damage, self)
 
+func interact(entity: Entity) -> void:
+	pass
+
 func move_up() -> bool:
 	if map.is_ground(map_x, map_y - 1):
 		var entity: Entity = map.get_entity_at(map_x, map_y - 1)
-		if entity == null:
+		if entity == null or (!entity.is_npc() and !entity.is_player()):
 			set_map_y(map_y - 1)
+			if entity != null:
+				entity.interact(self)
 		else:
 			attack(entity)
 		return true
@@ -86,8 +105,10 @@ func move_up() -> bool:
 func move_down() -> bool:
 	if map.is_ground(map_x, map_y + 1):
 		var entity: Entity = map.get_entity_at(map_x, map_y + 1)
-		if entity == null:
+		if entity == null or (!entity.is_npc() and !entity.is_player()):
 			set_map_y(map_y + 1)
+			if entity != null:
+				entity.interact(self)
 		else:
 			attack(entity)
 		return true
@@ -96,8 +117,10 @@ func move_down() -> bool:
 func move_left() -> bool:
 	if map.is_ground(map_x - 1, map_y):
 		var entity: Entity = map.get_entity_at(map_x - 1, map_y)
-		if entity == null:
+		if entity == null or (!entity.is_npc() and !entity.is_player()):
 			set_map_x(map_x - 1)
+			if entity != null:
+				entity.interact(self)
 		else:
 			attack(entity)
 		return true
@@ -106,8 +129,10 @@ func move_left() -> bool:
 func move_right() -> bool:
 	if map.is_ground(map_x + 1, map_y):
 		var entity: Entity = map.get_entity_at(map_x + 1, map_y)
-		if entity == null:
+		if entity == null or (!entity.is_npc() and !entity.is_player()):
 			set_map_x(map_x + 1)
+			if entity != null:
+				entity.interact(self)
 		else:
 			attack(entity)
 		return true

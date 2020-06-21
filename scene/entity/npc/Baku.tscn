@@ -10,6 +10,8 @@ strength = 2
 agility = 5
 level = 8
 vitality = 4
+npc = true
+id = 4
 
 [node name="Sprite" type="Sprite" parent="." index="1"]
 texture = ExtResource( 2 )

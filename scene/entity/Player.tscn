@@ -6,10 +6,12 @@
 
 [node name="Player" instance=ExtResource( 2 )]
 script = ExtResource( 3 )
+player = true
+id = 0
 
 [node name="Camera2D" type="Camera2D" parent="." index="0"]
 current = true
-zoom = Vector2( 4, 4 )
+zoom = Vector2( 1.5, 1.5 )
 smoothing_enabled = true
 
 [node name="Sprite" type="Sprite" parent="." index="1"]
