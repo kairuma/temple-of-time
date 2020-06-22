@@ -23,6 +23,7 @@ _global_script_class_icons={
 config/name="The Temple of Time"
 config/description="Temple of Time is a traditional roguelike where time advances with each step you take."
 run/main_scene="res://scene/state/MainMenu.tscn"
+boot_splash/image="res://img/menu/title.png"
 boot_splash/bg_color=Color( 0.152941, 0.203922, 0.282353, 1 )
 config/icon="res://icon.png"
 
