@@ -3,7 +3,7 @@ class_name Entity
 
 enum EntityID {PLAYER, SPRITE, STAIRS_UP, STAIRS_DOWN, BAKU}
 
-const CELL_SIZE: float = 48.0
+const CELL_SIZE: float = 32.0
 const TURN_SPEED: float = 0.5
 
 export(int, 0, 96) var map_x: int = 0 setget set_map_x, get_map_x
