@@ -17,3 +17,44 @@ smoothing_enabled = true
 [node name="Sprite" type="Sprite" parent="." index="1"]
 rotation = 4.46638e-06
 texture = ExtResource( 1 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." index="4"]
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer" index="0"]
+margin_top = 388.0
+margin_right = 276.0
+margin_bottom = 500.0
+custom_constants/margin_right = 48
+custom_constants/margin_top = 40
+custom_constants/margin_left = 48
+custom_constants/margin_bottom = 40
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer" index="0"]
+margin_left = 48.0
+margin_top = 40.0
+margin_right = 228.0
+margin_bottom = 72.0
+
+[node name="HpLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer" index="0"]
+margin_right = 180.0
+margin_bottom = 14.0
+size_flags_horizontal = 9
+text = "HP: 1 / 1"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HpBar" type="ProgressBar" parent="CanvasLayer/MarginContainer/VBoxContainer" index="1"]
+margin_top = 18.0
+margin_right = 180.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 1.0
+value = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}

@@ -39,9 +39,8 @@ map_path = NodePath("..")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
-margin_top = 406.0
 margin_right = 800.0
-margin_bottom = 500.0
+margin_bottom = 94.0
 custom_constants/margin_right = 48
 custom_constants/margin_top = 40
 custom_constants/margin_left = 48
@@ -54,8 +53,9 @@ __meta__ = {
 margin_left = 48.0
 margin_top = 40.0
 margin_right = 752.0
-margin_bottom = 54.0
-text = "Januray 01, 2020; 00 : 00 : 00"
+margin_bottom = 71.0
+text = "Januray 01, 2020
+00 : 00 : 00 AM"
 __meta__ = {
 "_edit_use_anchors_": false
 }

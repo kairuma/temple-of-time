@@ -37,9 +37,10 @@ func _ready() -> void:
 	set_start_time()
 
 func gen_map_seeds() -> void:
+	randomize()
+	map_seed = ((randi() << 31) + (randi() % 0x7FFFFFFF))
 	for i in 15:
-		randomize()
-		seeds.append(randi())
+		seeds.append(random_int())
 
 func random_int() -> int:
 	var result: int = (1103515245 * map_seed + 12345) / 65536 % 2048

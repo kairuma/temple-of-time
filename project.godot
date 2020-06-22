@@ -21,7 +21,8 @@ _global_script_class_icons={
 [application]
 
 config/name="The Temple of Time"
-run/main_scene="res://scene/state/Gameplay.tscn"
+config/description="Temple of Time is a traditional roguelike where time advances with each step you take."
+run/main_scene="res://scene/state/MainMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]

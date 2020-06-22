@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://scene/state/Win.gd" type="Script" id=1]
+[ext_resource path="res://scene/state/GameOver.gd" type="Script" id=1]
 
-[node name="Win" type="MarginContainer"]
+[node name="GameOver" type="MarginContainer"]
 margin_right = 800.0
 margin_bottom = 500.0
 custom_constants/margin_right = 48
@@ -19,14 +19,13 @@ margin_left = 48.0
 margin_top = 40.0
 margin_right = 752.0
 margin_bottom = 460.0
-alignment = 1
 
 [node name="Label" type="Label" parent="VBoxContainer"]
 margin_top = 191.0
 margin_right = 704.0
 margin_bottom = 205.0
 size_flags_vertical = 6
-text = "You Win."
+text = "You lose."
 align = 1
 
 [node name="Button" type="Button" parent="VBoxContainer"]

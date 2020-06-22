@@ -16,7 +16,7 @@ export(bool) var npc: bool = false setget ,is_npc
 export(bool) var player: bool = false setget ,is_player
 export(EntityID) var id: int = EntityID.SPRITE setget ,get_id
 var max_hp: int = 1 setget set_max_hp
-var hp: int = 1
+var hp: int = 1 setget set_hp
 var melee_attack: int = 0
 var armor_defense: int = 0
 
@@ -54,6 +54,11 @@ func set_max_hp(h: int) -> void:
 	max_hp = h
 	hp = hp * max_hp / old_max
 
+func set_hp(h: int) -> void:
+	hp = h
+	if hp <= 0:
+		die()
+
 func is_at(x: int, y: int) -> bool:
 	return map_x == x and map_y == y
 
@@ -64,10 +69,10 @@ func is_player() -> bool:
 	return player
 
 func take_damage(damage: int, source: Entity) -> void:
-	hp -= damage
-	print("%s:\t%d / %d" % [get_name(), hp, max_hp])
-	if hp <= 0:
-		queue_free()
+	set_hp(hp - damage)
+
+func die() -> void:
+	queue_free()
 
 func get_weapon_damage() -> int:
 	if melee_attack == 0:
