@@ -14,8 +14,8 @@ current = true
 smoothing_enabled = true
 
 [node name="Sprite" type="Sprite" parent="." index="1"]
-rotation = -6.28319
 texture = ExtResource( 1 )
+offset = Vector2( 0, -8 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." index="4"]
 
