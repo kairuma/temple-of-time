@@ -84,12 +84,17 @@ func get_defense() -> int:
 
 func attack(entity: Entity) -> void:
 	$AnimationPlayer.play("attack")
+	var crit: int = randi() % 20
+	if crit == 0:
+		return
 	var to_hit: int = randi() % 20 + 1 + strength
 	var damage_mult: float = (21.0 - (entity.get_defense() - to_hit)) / 20.0
 	var damage: int = get_weapon_damage() + strength * 5
 	damage *= damage_mult
 	if damage <= 0:
 		damage = 1
+	if crit == 19:
+		damage *= 2
 	entity.take_damage(damage, self)
 
 func interact(entity: Entity) -> void:
