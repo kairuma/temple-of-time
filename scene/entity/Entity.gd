@@ -6,8 +6,8 @@ enum EntityID {PLAYER, SPRITE, STAIRS_UP, STAIRS_DOWN, BAKU}
 const CELL_SIZE: float = 32.0
 const TURN_SPEED: float = 0.25
 
-export(int, 0, 96) var map_x: int = 0 setget set_map_x, get_map_x
-export(int, 0, 96) var map_y: int = 0 setget set_map_y, get_map_y
+var map_x: int = 0 setget set_map_x, get_map_x
+var map_y: int = 0 setget set_map_y, get_map_y
 export(int, -5, 5) var strength: int = 0
 export(int, -5, 5) var agility: int = 0
 export(int, 1, 20) var level: int = 1
@@ -23,13 +23,13 @@ var armor_defense: int = 0
 export(NodePath) var map_path: NodePath
 onready var map: Node2D = get_node(map_path) setget set_map
 
+func get_id() -> int:
+	return id
+
 func set_map_x(new_x: int) -> void:
 	map_x = new_x
 	$Tween.interpolate_property(self, "position", get_position(), Vector2(map_x * CELL_SIZE, map_y * CELL_SIZE), TURN_SPEED, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	$Tween.start()
-
-func get_id() -> int:
-	return id
 
 func get_map_x() -> int:
 	return map_x
@@ -47,7 +47,7 @@ func set_map(m: Node2D) -> void:
 
 func set_vitality(v: int) -> void:
 	vitality = v
-	set_max_hp(max(1, vitality * 5) + 10 * level / 3)
+	set_max_hp((vitality + 5) * 5 + 10 * level / 3)
 
 func set_max_hp(h: int) -> void:
 	var old_max: int = max_hp
@@ -86,7 +86,7 @@ func attack(entity: Entity) -> void:
 	$AnimationPlayer.play("attack")
 	var to_hit: int = randi() % 20 + 1 + strength
 	var damage_mult: float = (21.0 - (entity.get_defense() - to_hit)) / 20.0
-	var damage: int = get_weapon_damage() + strength
+	var damage: int = get_weapon_damage() + strength * 5
 	damage *= damage_mult
 	if damage <= 0:
 		damage = 1

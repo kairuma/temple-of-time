@@ -1,4 +1,4 @@
-extends "res://scene/entity/Entity.gd"
+extends Entity
 
 signal tick
 
@@ -29,7 +29,7 @@ func check_move() -> void:
 				emit_signal("tick")
 		elif Input.is_action_pressed("right"):
 			if move_right():
-				emit_signal("tick")\
+				emit_signal("tick")
 
 func set_max_hp(h: int) -> void:
 	.set_max_hp(h)
@@ -40,7 +40,6 @@ func set_max_hp(h: int) -> void:
 
 func set_hp(h: int) -> void:
 	.set_hp(h)
-	print(hp_label)
 	if hp_label != null:
 		hp_label.set_text("HP: %d / %d" % [hp, max_hp])
 	if hp_bar != null:

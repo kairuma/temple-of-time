@@ -85,7 +85,7 @@ func gen_map(going_down: bool) -> void:
 		if i > 1:
 			rect_y += height / 2
 		rooms.append([rect_x, rect_y, rect_w, rect_h])
-	for i in range(ROOM_ITERATIONS):
+	for i in ROOM_ITERATIONS:
 		var rect_w: int = 3 + (random_int() % 5) * 2
 		var rect_x: int = 1 + (random_int() % ((width - rect_w - 1) / 2)) * 2
 		var rect_h: int = 3 + (random_int() % 5) * 2
