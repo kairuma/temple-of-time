@@ -27,8 +27,13 @@ func get_id() -> int:
 	return id
 
 func set_map_x(new_x: int) -> void:
+	var old_x: int = map_x
 	map_x = new_x
 	$Tween.interpolate_property(self, "position", get_position(), Vector2(map_x * CELL_SIZE, map_y * CELL_SIZE), TURN_SPEED, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	if old_x > map_x:
+		$Tween.interpolate_property(self, "scale", Vector2(1.15, 0.85), Vector2(1.0, 1.0), TURN_SPEED, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+	else:
+		$Tween.interpolate_property(self, "scale", Vector2(-1.15, 0.85), Vector2(-1.0, 1.0), TURN_SPEED, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
 	$Tween.start()
 
 func get_map_x() -> int:
@@ -37,6 +42,10 @@ func get_map_x() -> int:
 func set_map_y(new_y: int) -> void:
 	map_y = new_y
 	$Tween.interpolate_property(self, "position", get_position(), Vector2(map_x * CELL_SIZE, map_y * CELL_SIZE), TURN_SPEED, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	if get_scale().x > 0.0:
+		$Tween.interpolate_property(self, "scale", Vector2(1.15, 0.85), Vector2(1.0, 1.0), TURN_SPEED, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+	else:
+		$Tween.interpolate_property(self, "scale", Vector2(-1.15, 0.85), Vector2(-1.0, 1.0), TURN_SPEED, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
 	$Tween.start()
 
 func get_map_y() -> int:

@@ -25,7 +25,7 @@ config/description="Temple of Time is a traditional roguelike where time advance
 run/main_scene="res://scene/state/MainMenu.tscn"
 boot_splash/image="res://img/menu/title.png"
 boot_splash/fullsize=false
-boot_splash/bg_color=Color( 0, 0.0823529, 0.141176, 1 )
+boot_splash/bg_color=Color( 0.929412, 0.968627, 0.964706, 1 )
 config/icon="res://icon.png"
 
 [autoload]
@@ -73,5 +73,5 @@ quality/driver/driver_name="GLES2"
 quality/2d/use_pixel_snap=true
 vram_compression/import_etc=true
 vram_compression/import_etc2=false
-environment/default_clear_color=Color( 0, 0.0823529, 0.141176, 1 )
+environment/default_clear_color=Color( 0.929412, 0.968627, 0.964706, 1 )
 environment/default_environment="res://default_env.tres"
