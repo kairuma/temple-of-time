@@ -24,22 +24,23 @@ margin_right = 752.0
 margin_bottom = 460.0
 
 [node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
-margin_right = 618.0
+margin_right = 569.0
 margin_bottom = 420.0
 size_flags_horizontal = 3
 texture = ExtResource( 2 )
 stretch_mode = 4
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
-margin_left = 622.0
+margin_left = 573.0
 margin_right = 704.0
 margin_bottom = 420.0
+custom_constants/separation = 16
 alignment = 1
 
 [node name="NewGameButton" type="Button" parent="HBoxContainer/VBoxContainer"]
-margin_top = 188.0
-margin_right = 82.0
-margin_bottom = 208.0
+margin_top = 169.0
+margin_right = 131.0
+margin_bottom = 202.0
 text = "New Game"
 
 [node name="LoadGameButton" type="Button" parent="HBoxContainer/VBoxContainer"]
@@ -57,14 +58,14 @@ margin_bottom = 220.0
 text = "Options"
 
 [node name="AboutButton" type="Button" parent="HBoxContainer/VBoxContainer"]
-margin_top = 212.0
-margin_right = 82.0
-margin_bottom = 232.0
+margin_top = 218.0
+margin_right = 131.0
+margin_bottom = 251.0
 text = "About"
 
 [node name="VersionLabel" type="Label" parent="."]
 margin_left = 48.0
-margin_top = 446.0
+margin_top = 431.0
 margin_right = 752.0
 margin_bottom = 460.0
 size_flags_vertical = 10
@@ -91,7 +92,7 @@ size_flags_vertical = 3
 
 [node name="AboutLabel" type="Label" parent="AboutPopup/VBoxContainer/VScrollBar"]
 margin_right = 690.0
-margin_bottom = 354.0
+margin_bottom = 1021.0
 size_flags_horizontal = 3
 text = "Temple of Time 0.0.0
 Copyright (c) 2020 Kai Ruma

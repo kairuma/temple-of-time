@@ -22,8 +22,8 @@ offset = Vector2( 0, -8 )
 [node name="CanvasLayer" type="CanvasLayer" parent="." index="4"]
 
 [node name="Hud" type="MarginContainer" parent="CanvasLayer" index="0"]
-margin_top = 388.0
-margin_right = 276.0
+margin_top = 358.0
+margin_right = 300.0
 margin_bottom = 500.0
 theme = ExtResource( 4 )
 custom_constants/margin_right = 48
@@ -37,12 +37,12 @@ __meta__ = {
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Hud" index="0"]
 margin_left = 48.0
 margin_top = 40.0
-margin_right = 228.0
-margin_bottom = 72.0
+margin_right = 252.0
+margin_bottom = 102.0
 
 [node name="HpLabel" type="Label" parent="CanvasLayer/Hud/VBoxContainer" index="0"]
-margin_right = 180.0
-margin_bottom = 14.0
+margin_right = 204.0
+margin_bottom = 29.0
 size_flags_horizontal = 9
 text = "HP: 1 / 1"
 __meta__ = {
@@ -50,9 +50,9 @@ __meta__ = {
 }
 
 [node name="HpBar" type="ProgressBar" parent="CanvasLayer/Hud/VBoxContainer" index="1"]
-margin_top = 18.0
-margin_right = 180.0
-margin_bottom = 32.0
+margin_top = 33.0
+margin_right = 204.0
+margin_bottom = 62.0
 size_flags_horizontal = 3
 min_value = 1.0
 max_value = 1.0
