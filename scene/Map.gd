@@ -107,7 +107,6 @@ func gen_home(going_down: bool) -> void:
 	stairs.set_map_y(0)
 
 func gen_map(going_down: bool) -> void:
-	set_floor_num(15)
 	if floor_num == 0:
 		gen_home(going_down)
 		return
