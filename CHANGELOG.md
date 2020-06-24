@@ -2,10 +2,10 @@
 
 ## Version 0.0.2 - 2020-06-24
 ### Added
-Added save games.
-Added pause menu.
-Added options menu.
-Added critical hits and critical misses.
+- Added save games.
+- Added pause menu.
+- Added options menu.
+- Added critical hits and critical misses.
 
 ### Changed
 - New GUI theme starting to be implemented.
