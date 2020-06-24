@@ -1,4 +1,4 @@
-# Temple of Time 0.0.1
+# Temple of Time 0.0.2
 ## By Kai Ruma
 
 Temple of Time is a traditional roguelike where time advances with each step you take.

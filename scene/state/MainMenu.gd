@@ -7,7 +7,8 @@ func load_game() -> void:
 	pass
 
 func show_options() -> void:
-	pass
+	get_tree().set_pause(true)
+	$OptionsMenu.show()
 
 func show_about() -> void:
 	$AboutPopup.show()
