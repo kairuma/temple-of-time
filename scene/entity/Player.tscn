@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://img/entity/player.png" type="Texture" id=1]
 [ext_resource path="res://scene/entity/Entity.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scene/entity/Player.gd" type="Script" id=3]
 [ext_resource path="res://gui/temple_of_time_theme.tres" type="Theme" id=4]
+[ext_resource path="res://scene/hud/PauseMenu.tscn" type="PackedScene" id=5]
 
 [node name="Player" instance=ExtResource( 2 )]
 script = ExtResource( 3 )
@@ -20,7 +21,7 @@ offset = Vector2( 0, -8 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." index="4"]
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer" index="0"]
+[node name="Hud" type="MarginContainer" parent="CanvasLayer" index="0"]
 margin_top = 388.0
 margin_right = 276.0
 margin_bottom = 500.0
@@ -33,13 +34,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer" index="0"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Hud" index="0"]
 margin_left = 48.0
 margin_top = 40.0
 margin_right = 228.0
 margin_bottom = 72.0
 
-[node name="HpLabel" type="Label" parent="CanvasLayer/MarginContainer/VBoxContainer" index="0"]
+[node name="HpLabel" type="Label" parent="CanvasLayer/Hud/VBoxContainer" index="0"]
 margin_right = 180.0
 margin_bottom = 14.0
 size_flags_horizontal = 9
@@ -48,7 +49,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HpBar" type="ProgressBar" parent="CanvasLayer/MarginContainer/VBoxContainer" index="1"]
+[node name="HpBar" type="ProgressBar" parent="CanvasLayer/Hud/VBoxContainer" index="1"]
 margin_top = 18.0
 margin_right = 180.0
 margin_bottom = 32.0
@@ -59,3 +60,6 @@ value = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="PauseMenu" parent="CanvasLayer" index="1" instance=ExtResource( 5 )]
+visible = false

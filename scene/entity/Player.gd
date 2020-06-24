@@ -4,6 +4,7 @@ signal tick
 
 onready var hp_label: Label = $CanvasLayer/MarginContainer/VBoxContainer/HpLabel
 onready var hp_bar: Label = $CanvasLayer/MarginContainer/VBoxContainer/HpBar
+onready var pause_menu: Label = $CanvasLayer/PauseMenu
 
 func _ready() -> void:
 	set_process(true)
@@ -12,9 +13,15 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	check_move()
+	check_pause()
 
 func can_move() -> bool:
 	return !$Tween.is_active() and !$AnimationPlayer.is_playing()
+
+func check_pause() -> void:
+	if Input.is_action_pressed("pause"):
+		pause_menu.show()
+		get_tree().set_pause(true)
 
 func check_move() -> void:
 	if can_move():
