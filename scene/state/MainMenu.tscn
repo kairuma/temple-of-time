@@ -3,7 +3,7 @@
 [ext_resource path="res://scene/state/MainMenu.gd" type="Script" id=1]
 [ext_resource path="res://img/menu/title.png" type="Texture" id=2]
 [ext_resource path="res://gui/temple_of_time_theme.tres" type="Theme" id=3]
-[ext_resource path="res://img/menu/OptionsMenu.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scene/menu/OptionsMenu.tscn" type="PackedScene" id=4]
 
 [node name="MainMenu" type="MarginContainer"]
 margin_right = 800.0
@@ -25,47 +25,47 @@ margin_right = 752.0
 margin_bottom = 460.0
 
 [node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
-margin_right = 569.0
+margin_right = 598.0
 margin_bottom = 420.0
 size_flags_horizontal = 3
 texture = ExtResource( 2 )
 stretch_mode = 4
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
-margin_left = 573.0
+margin_left = 602.0
 margin_right = 704.0
 margin_bottom = 420.0
 custom_constants/separation = 16
 alignment = 1
 
+[node name="ContinueButton" type="Button" parent="HBoxContainer/VBoxContainer"]
+visible = false
+margin_top = 134.0
+margin_right = 102.0
+margin_bottom = 160.0
+text = "Continue"
+
 [node name="NewGameButton" type="Button" parent="HBoxContainer/VBoxContainer"]
-margin_top = 144.0
-margin_right = 131.0
-margin_bottom = 177.0
+margin_top = 155.0
+margin_right = 102.0
+margin_bottom = 181.0
 text = "New Game"
 
-[node name="LoadGameButton" type="Button" parent="HBoxContainer/VBoxContainer"]
-visible = false
-margin_top = 188.0
-margin_right = 84.0
-margin_bottom = 208.0
-text = "Load Game"
-
 [node name="OptionsButton" type="Button" parent="HBoxContainer/VBoxContainer"]
-margin_top = 193.0
-margin_right = 131.0
-margin_bottom = 226.0
+margin_top = 197.0
+margin_right = 102.0
+margin_bottom = 223.0
 text = "Options"
 
 [node name="AboutButton" type="Button" parent="HBoxContainer/VBoxContainer"]
-margin_top = 242.0
-margin_right = 131.0
-margin_bottom = 275.0
+margin_top = 239.0
+margin_right = 102.0
+margin_bottom = 265.0
 text = "About"
 
 [node name="VersionLabel" type="Label" parent="."]
 margin_left = 48.0
-margin_top = 431.0
+margin_top = 438.0
 margin_right = 752.0
 margin_bottom = 460.0
 size_flags_vertical = 10
@@ -86,15 +86,15 @@ margin_bottom = 413.0
 
 [node name="VScrollBar" type="ScrollContainer" parent="AboutPopup/VBoxContainer"]
 margin_right = 690.0
-margin_bottom = 382.0
+margin_bottom = 376.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="AboutLabel" type="Label" parent="AboutPopup/VBoxContainer/VScrollBar"]
 margin_right = 690.0
-margin_bottom = 1021.0
+margin_bottom = 647.0
 size_flags_horizontal = 3
-text = "Temple of Time 0.0.0
+text = "Temple of Time 0.0.2
 Copyright (c) 2020 Kai Ruma
 
 This game uses Godot Engine, available under the following license:
@@ -114,8 +114,8 @@ __meta__ = {
 
 [node name="OkButton" type="Button" parent="AboutPopup/VBoxContainer"]
 margin_left = 329.0
-margin_top = 386.0
-margin_right = 360.0
+margin_top = 380.0
+margin_right = 361.0
 margin_bottom = 406.0
 size_flags_horizontal = 4
 text = "OK"
@@ -126,8 +126,8 @@ margin_left = 48.0
 margin_top = 40.0
 margin_right = 752.0
 margin_bottom = 460.0
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/ContinueButton" to="." method="load_game"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/NewGameButton" to="." method="new_game"]
-[connection signal="pressed" from="HBoxContainer/VBoxContainer/LoadGameButton" to="." method="load_game"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/OptionsButton" to="." method="show_options"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/AboutButton" to="." method="show_about"]
 [connection signal="pressed" from="AboutPopup/VBoxContainer/OkButton" to="." method="hide_about"]

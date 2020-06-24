@@ -11,13 +11,9 @@ func update() -> void:
 		#astar eventually I guess
 		if map_x < target.get_map_x():
 			move_right()
-			print("right")
 		elif map_x > target.get_map_x():
 			move_left()
-			print("left")
 		elif map_y < target.get_map_y():
 			move_down()
-			print("down")
 		elif map_y > target.get_map_y():
 			move_up()
-			print("up")

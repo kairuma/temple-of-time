@@ -5,5 +5,9 @@ func resume_game() -> void:
 	hide()
 
 func show_options() -> void:
-	get_tree().set_pause(true)
 	$OptionsMenu.show()
+
+func save_and_quit() -> void:
+	Global.save_game()
+	get_tree().set_pause(false)
+	get_tree().change_scene("res://scene/state/MainMenu.tscn")

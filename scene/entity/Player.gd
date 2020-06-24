@@ -2,8 +2,8 @@ extends Entity
 
 signal tick
 
-onready var hp_label: Label = $CanvasLayer/MarginContainer/VBoxContainer/HpLabel
-onready var hp_bar: Label = $CanvasLayer/MarginContainer/VBoxContainer/HpBar
+onready var hp_label: Label = $CanvasLayer/Hud/VBoxContainer/HpLabel
+onready var hp_bar: Label = $CanvasLayer/Hud/VBoxContainer/HpBar
 onready var pause_menu: Label = $CanvasLayer/PauseMenu
 
 func _ready() -> void:
@@ -53,4 +53,5 @@ func set_hp(h: int) -> void:
 		hp_bar.set_value(hp)
 
 func die() -> void:
+	Global.delete_save()
 	get_tree().change_scene("res://scene/state/GameOver.tscn")

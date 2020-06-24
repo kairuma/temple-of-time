@@ -15,7 +15,7 @@ const MONTH_LENGTH: Dictionary = {
 var stairs_class: Resource = preload("res://scene/entity/Stairs.tscn")
 var fey_class: Resource = preload("res://scene/entity/npc/Fey.tscn")
 
-var floor_num: int = 0 setget set_floor_num
+var floor_num: int = 0 setget set_floor_num, get_floor_num
 var width: int = 15
 var height: int = 15
 var second: int = 0
@@ -25,20 +25,57 @@ var day: int = 1
 var month: int = 1
 var year: int = 2020
 var seeds: PoolIntArray = []
+var world_seed: int = 1597463007 setget ,get_world_seed
 var map_seed: int = 1597463007
-var saved_entities: Array = []
+var saved_entities: Array = [] setget ,get_saved_entities
+var start_x: int = 7
+var start_y: int = 7
 
 func _ready() -> void:
+	randomize()
+	$Player.set_map(self)
 	$Player.connect("tick", self, "update_entities")
-	for i in 16:
-		saved_entities.append([])
+	if Global.is_new_game():
+		init_new_game()
+	else:
+		load_game()
 	gen_map_seeds()
 	gen_map(true)
-	set_start_time()
+	$Player.set_map_x(start_x)
+	$Player.set_map_y(start_y)
+
+func init_new_game() -> void:
+	for i in 16:
+		saved_entities.append([])
+	world_seed = ((randi() << 31) + (randi() % 0x7FFFFFFF))
+	set_start_time(OS.get_datetime())
+
+func load_game() -> void:
+	var save_file = File.new()
+	if !save_file.file_exists("user://player.sav"):
+		init_new_game()
+		return
+	save_file.open("user://player.sav", File.READ)
+	var data: String = save_file.get_line()
+	world_seed = int(save_file.get_line())
+	var saved_year: int = int(save_file.get_line())
+	save_file.close()
+	var json_result: JSONParseResult = JSON.parse(data)
+	if !json_result.get_result() is Dictionary:
+		init_new_game()
+		return
+	var save_data: Dictionary = json_result.get_result()
+	set_floor_num(save_data["floor_num"])
+	start_x = save_data["player_x"]
+	start_y = save_data["player_y"]
+	$Player.set_hp(save_data["player_hp"])
+	saved_entities = save_data["entities"]
+	var time: Dictionary = save_data["time"]
+	time["year"] = saved_year
+	set_start_time(time)
 
 func gen_map_seeds() -> void:
-	randomize()
-	map_seed = ((randi() << 31) + (randi() % 0x7FFFFFFF))
+	map_seed = world_seed
 	for i in 15:
 		seeds.append(random_int())
 
@@ -70,6 +107,7 @@ func gen_home(going_down: bool) -> void:
 	stairs.set_map_y(0)
 
 func gen_map(going_down: bool) -> void:
+	set_floor_num(15)
 	if floor_num == 0:
 		gen_home(going_down)
 		return
@@ -154,7 +192,7 @@ func populate(rooms: Array) -> void:
 func load_entities(entities: Array, going_down: bool) -> void:
 	for e in entities:
 		var entity: Entity
-		match e[0]:
+		match int(e[0]):
 			Entity.EntityID.FEY:
 				entity = fey_class.instance()
 			Entity.EntityID.STAIRS_UP:
@@ -172,11 +210,12 @@ func load_entities(entities: Array, going_down: bool) -> void:
 					$Player.set_map_x(e[1])
 					$Player.set_map_y(e[2])
 			_:
-				continue
+				pass
 		$Entities.add_child(entity)
 		entity.set_map(self)
 		entity.set_map_x(e[1])
 		entity.set_map_y(e[2])
+		entity.set_hp(e[3])
 
 func is_in_room(x: int, y: int, rooms: Array) -> bool:
 	for r in rooms:
@@ -289,7 +328,7 @@ func update_time_hud() -> void:
 	var year_str: String = str(year)
 	if year < 0:
 		year_str = "%d BC" % -year
-	if Global.display_hour_24():
+	if Global.is_hour_24():
 		time_str = "%s %02d, %s\n%02d : %02d : %02d" % [MONTH_NAME[month], day, year_str, hour, minute, second]
 	else:
 		if hour == 0:
@@ -302,8 +341,10 @@ func update_time_hud() -> void:
 			time_str = "%s %02d, %s\n%02d : %02d : %02d PM" % [MONTH_NAME[month], day, year_str, hour - 12, minute, second]
 	$CanvasLayer/MarginContainer/TimeLabel.set_text(time_str)
 
-func set_start_time() -> void:
-	var start_time: Dictionary = OS.get_datetime()
+func get_time() -> Dictionary:
+	return {"second": second, "minute": minute, "hour": hour, "day": day, "month": month, "year": year}
+
+func set_start_time(start_time: Dictionary) -> void:
 	second = start_time["second"]
 	minute = start_time["minute"]
 	hour = start_time["hour"]
@@ -383,6 +424,9 @@ func increment_time() -> void:
 func is_ground(x: int, y: int) -> bool:
 	return $TileMap.get_cell(x, y) == 0
 
+func get_world_seed() -> int:
+	return world_seed
+
 func set_floor_num(num: int) -> void:
 	floor_num = num
 	if floor_num == 0:
@@ -392,13 +436,33 @@ func set_floor_num(num: int) -> void:
 		width = 32 + 4 * floor_num
 		height = 32 + 4 * floor_num
 
+func get_floor_num() -> int:
+	return floor_num
+
+func get_player_x() -> int:
+	return $Player.get_map_x()
+
+func get_player_y() -> int:
+	return $Player.get_map_y()
+
+func get_player_hp() -> int:
+	return $Player.get_hp()
+
+func get_saved_entities() -> Array:
+	saved_entities[floor_num] = []
+	for e in $Entities.get_children():
+		saved_entities[floor_num].append([e.get_id(), e.get_map_x(), e.get_map_y(), e.get_hp()])
+		e.queue_free()
+	return saved_entities
+
 func descend() -> void:
 	if floor_num == 15:
+		Global.delete_save()
 		get_tree().change_scene("res://scene/state/Win.tscn")
 		return
 	saved_entities[floor_num] = []
 	for e in $Entities.get_children():
-		saved_entities[floor_num].append([e.get_id(), e.get_map_x(), e.get_map_y()])
+		saved_entities[floor_num].append([e.get_id(), e.get_map_x(), e.get_map_y(), e.get_hp()])
 		e.queue_free()
 	$TileMap.clear()
 	set_floor_num(floor_num + 1)
@@ -407,7 +471,7 @@ func descend() -> void:
 func ascend() -> void:
 	saved_entities[floor_num] = []
 	for e in $Entities.get_children():
-		saved_entities[floor_num].append([e.get_id(), e.get_map_x(), e.get_map_y()])
+		saved_entities[floor_num].append([e.get_id(), e.get_map_x(), e.get_map_y(), e.get_hp()])
 		e.queue_free()
 	$TileMap.clear()
 	set_floor_num(floor_num - 1)

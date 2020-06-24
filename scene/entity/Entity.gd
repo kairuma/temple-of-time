@@ -12,16 +12,13 @@ export(int, -5, 5) var strength: int = 0
 export(int, -5, 5) var agility: int = 0
 export(int, 1, 20) var level: int = 1
 export(int, -5, 5) var vitality: int = 0 setget set_vitality
-export(bool) var npc: bool = false setget ,is_npc
-export(bool) var player: bool = false setget ,is_player
 export(EntityID) var id: int = EntityID.FEY setget ,get_id
 var max_hp: int = 1 setget set_max_hp
-var hp: int = 1 setget set_hp
+var hp: int = 1 setget set_hp, get_hp
 var melee_attack: int = 0
 var armor_defense: int = 0
 
-export(NodePath) var map_path: NodePath
-onready var map: Node2D = get_node(map_path) setget set_map
+var map: Node2D = null
 
 func get_id() -> int:
 	return id
@@ -68,14 +65,17 @@ func set_hp(h: int) -> void:
 	if hp <= 0:
 		die()
 
+func get_hp() -> int:
+	return hp
+
 func is_at(x: int, y: int) -> bool:
 	return map_x == x and map_y == y
 
 func is_npc() -> bool:
-	return npc
+	return id == EntityID.FEY or id == EntityID.BAKU
 
 func is_player() -> bool:
-	return player
+	return id == EntityID.PLAYER
 
 func take_damage(damage: int, source: Entity) -> void:
 	set_hp(hp - damage)
@@ -92,7 +92,17 @@ func get_defense() -> int:
 	return 10 + agility + armor_defense
 
 func attack(entity: Entity) -> void:
-	$AnimationPlayer.play("attack")
+	$Tween.interpolate_property(self, "position", get_position(), Vector2(map_x * CELL_SIZE, map_y * CELL_SIZE), TURN_SPEED, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	if map_x < entity.get_map_x():
+		$Tween.interpolate_property(self, "scale", Vector2(-1.15, 0.85), Vector2(-1.0, 1.0), TURN_SPEED, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+	elif map_x > entity.get_map_x():
+		$Tween.interpolate_property(self, "scale", Vector2(1.15, 0.85), Vector2(1.0, 1.0), TURN_SPEED, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+	elif get_scale().x > 0.0:
+		$Tween.interpolate_property(self, "scale", Vector2(1.15, 0.85), Vector2(1.0, 1.0), TURN_SPEED, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+	else:
+		$Tween.interpolate_property(self, "scale", Vector2(-1.15, 0.85), Vector2(-1.0, 1.0), TURN_SPEED, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+	$Tween.start()
+	#$AnimationPlayer.play("attack")
 	var crit: int = randi() % 20
 	if crit == 0:
 		return

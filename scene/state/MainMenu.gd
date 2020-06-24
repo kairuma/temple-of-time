@@ -1,13 +1,20 @@
 extends MarginContainer
 
+onready var continue_button: Button = $HBoxContainer/VBoxContainer/ContinueButton
+
+func _ready() -> void:
+	if File.new().file_exists("user://player.sav"):
+		continue_button.show()
+
 func new_game() -> void:
+	Global.set_new_game(true)
 	get_tree().change_scene("res://scene/state/Gameplay.tscn")
 
 func load_game() -> void:
-	pass
+	Global.set_new_game(false)
+	get_tree().change_scene("res://scene/state/Gameplay.tscn")
 
 func show_options() -> void:
-	get_tree().set_pause(true)
 	$OptionsMenu.show()
 
 func show_about() -> void:
