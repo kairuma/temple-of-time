@@ -13,7 +13,7 @@ const MONTH_LENGTH: Dictionary = {
 }
 
 var stairs_class: Resource = preload("res://scene/entity/Stairs.tscn")
-var sprite_class: Resource = preload("res://scene/entity/npc/Sprite.tscn")
+var fey_class: Resource = preload("res://scene/entity/npc/Fey.tscn")
 
 var floor_num: int = 0 setget set_floor_num
 var width: int = 15
@@ -144,7 +144,7 @@ func populate(rooms: Array) -> void:
 			stairs.set_map_y(y)
 			pass
 		else:
-			var e: Entity = sprite_class.instance()
+			var e: Entity = fey_class.instance()
 			$Entities.add_child(e)
 			e.set_map(self)
 			e.set_map_x(x)
@@ -155,8 +155,8 @@ func load_entities(entities: Array, going_down: bool) -> void:
 	for e in entities:
 		var entity: Entity
 		match e[0]:
-			Entity.EntityID.SPRITE:
-				entity = sprite_class.instance()
+			Entity.EntityID.FEY:
+				entity = fey_class.instance()
 			Entity.EntityID.STAIRS_UP:
 				entity = stairs_class.instance()
 				entity.set_going_down(false)

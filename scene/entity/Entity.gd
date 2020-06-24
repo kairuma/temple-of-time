@@ -1,7 +1,7 @@
 extends Node2D
 class_name Entity
 
-enum EntityID {PLAYER, SPRITE, STAIRS_UP, STAIRS_DOWN, BAKU}
+enum EntityID {PLAYER, FEY, STAIRS_UP, STAIRS_DOWN, BAKU}
 
 const CELL_SIZE: float = 32.0
 const TURN_SPEED: float = 0.25
@@ -14,7 +14,7 @@ export(int, 1, 20) var level: int = 1
 export(int, -5, 5) var vitality: int = 0 setget set_vitality
 export(bool) var npc: bool = false setget ,is_npc
 export(bool) var player: bool = false setget ,is_player
-export(EntityID) var id: int = EntityID.SPRITE setget ,get_id
+export(EntityID) var id: int = EntityID.FEY setget ,get_id
 var max_hp: int = 1 setget set_max_hp
 var hp: int = 1 setget set_hp
 var melee_attack: int = 0

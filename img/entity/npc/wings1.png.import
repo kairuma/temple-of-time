@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/sprite.png-59b3f82536ba39c9386c0b279ce00685.stex"
+path="res://.import/wings1.png-1f76a86e11e80c6a40c3773b407a373d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://img/entity/npc/sprite.png"
-dest_files=[ "res://.import/sprite.png-59b3f82536ba39c9386c0b279ce00685.stex" ]
+source_file="res://img/entity/npc/wings1.png"
+dest_files=[ "res://.import/wings1.png-1f76a86e11e80c6a40c3773b407a373d.stex" ]
 
 [params]
 
