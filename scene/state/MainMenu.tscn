@@ -69,7 +69,7 @@ margin_top = 438.0
 margin_right = 752.0
 margin_bottom = 460.0
 size_flags_vertical = 10
-text = "Version 0.0.2"
+text = "Version 0.0.3"
 
 [node name="AboutPopup" type="PanelContainer" parent="."]
 visible = false
@@ -94,7 +94,7 @@ size_flags_vertical = 3
 margin_right = 690.0
 margin_bottom = 647.0
 size_flags_horizontal = 3
-text = "Temple of Time 0.0.2
+text = "Temple of Time 0.0.3
 Copyright (c) 2020 Kai Ruma
 
 This game uses Godot Engine, available under the following license:

@@ -32,6 +32,7 @@ func save_game() -> void:
 		"player_y": map_node.get_player_y(), 
 		"player_hp": map_node.get_player_hp(), 
 		"entities": map_node.get_saved_entities(), 
+		"tiles": map_node.get_shown_tiles(), 
 		"time": time, 
 	}
 	var save_file: File = File.new()

@@ -8,10 +8,11 @@ const TURN_SPEED: float = 0.25
 
 var map_x: int = 0 setget set_map_x, get_map_x
 var map_y: int = 0 setget set_map_y, get_map_y
+export(int, 1, 20) var level: int = 1
 export(int, -5, 5) var strength: int = 0
 export(int, -5, 5) var agility: int = 0
-export(int, 1, 20) var level: int = 1
 export(int, -5, 5) var vitality: int = 0 setget set_vitality
+export(int, -5, 5) var insight: int = 0 setget set_insight, get_insight
 export(EntityID) var id: int = EntityID.FEY setget ,get_id
 var max_hp: int = 1 setget set_max_hp
 var hp: int = 1 setget set_hp, get_hp
@@ -54,6 +55,12 @@ func set_map(m: Node2D) -> void:
 func set_vitality(v: int) -> void:
 	vitality = v
 	set_max_hp((vitality + 5) * 5 + 10 * level / 3)
+
+func set_insight(i: int) -> void:
+	insight = i
+
+func get_insight() -> int:
+	return insight
 
 func set_max_hp(h: int) -> void:
 	var old_max: int = max_hp

@@ -1,45 +1,20 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scene/entity/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scene/Map.gd" type="Script" id=2]
-[ext_resource path="res://img/tile/floor.png" type="Texture" id=3]
 [ext_resource path="res://gui/temple_of_time_theme.tres" type="Theme" id=4]
-
-[sub_resource type="TileSet" id=1]
-0/name = "floor.png 0"
-0/texture = ExtResource( 3 )
-0/tex_offset = Vector2( 0, 0 )
-0/modulate = Color( 1, 1, 1, 1 )
-0/region = Rect2( 0, 0, 34, 37 )
-0/tile_mode = 0
-0/occluder_offset = Vector2( 0, 0 )
-0/navigation_offset = Vector2( 0, 0 )
-0/shape_offset = Vector2( 0, 0 )
-0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-0/shape_one_way = false
-0/shape_one_way_margin = 0.0
-0/shapes = [  ]
-0/z_index = 0
 
 [node name="Map" type="Node2D" groups=[
 "Map",
 ]]
 script = ExtResource( 2 )
 
-[node name="TileMap" type="TileMap" parent="."]
-position = Vector2( -16, -16 )
+[node name="Tiles" type="YSort" parent="."]
 z_index = -1
-tile_set = SubResource( 1 )
-cell_size = Vector2( 32, 32 )
-format = 1
 
 [node name="Entities" type="YSort" parent="."]
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
-strength = 0
-agility = 0
-level = 1
-vitality = 0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -65,3 +40,8 @@ text = "Januray 01, 2020
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color( 0.854902, 0.384314, 0.490196, 1 )
+
+[node name="Tween" type="Tween" parent="."]

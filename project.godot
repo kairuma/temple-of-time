@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "Entity",
 "language": "GDScript",
 "path": "res://scene/entity/Entity.gd"
+}, {
+"base": "Sprite",
+"class": "Tile",
+"language": "GDScript",
+"path": "res://scene/Tile.gd"
 } ]
 _global_script_class_icons={
-"Entity": ""
+"Entity": "",
+"Tile": ""
 }
 
 [application]
@@ -31,6 +37,10 @@ config/icon="res://icon.png"
 [autoload]
 
 Global="*res://scene/Global.gd"
+
+[debug]
+
+gdscript/warnings/enable=false
 
 [display]
 

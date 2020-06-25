@@ -12,6 +12,7 @@ const MONTH_LENGTH: Dictionary = {
 	9: 30, 10: 31, 11: 30, 12: 31
 }
 
+var tile_class: Resource = preload("res://scene/Tile.tscn")
 var stairs_class: Resource = preload("res://scene/entity/Stairs.tscn")
 var fey_class: Resource = preload("res://scene/entity/npc/Fey.tscn")
 
@@ -28,8 +29,10 @@ var seeds: PoolIntArray = []
 var world_seed: int = 1597463007 setget ,get_world_seed
 var map_seed: int = 1597463007
 var saved_entities: Array = [] setget ,get_saved_entities
+var shown_tiles: Array = [] setget ,get_shown_tiles
 var start_x: int = 7
 var start_y: int = 7
+var cells: Array = []
 
 func _ready() -> void:
 	randomize()
@@ -40,13 +43,15 @@ func _ready() -> void:
 	else:
 		load_game()
 	gen_map_seeds()
-	gen_map(true)
+	gen_map(true, false)
 	$Player.set_map_x(start_x)
 	$Player.set_map_y(start_y)
+	render_map()
 
 func init_new_game() -> void:
 	for i in 16:
 		saved_entities.append([])
+		shown_tiles.append([])
 	world_seed = ((randi() << 31) + (randi() % 0x7FFFFFFF))
 	set_start_time(OS.get_datetime())
 
@@ -70,6 +75,7 @@ func load_game() -> void:
 	start_y = save_data["player_y"]
 	$Player.set_hp(save_data["player_hp"])
 	saved_entities = save_data["entities"]
+	shown_tiles = save_data["tiles"]
 	var time: Dictionary = save_data["time"]
 	time["year"] = saved_year
 	set_start_time(time)
@@ -91,7 +97,7 @@ func random_int() -> int:
 func gen_home(going_down: bool) -> void:
 	for y in height:
 		for x in width:
-			$TileMap.set_cell(x, y, 0)
+			set_cell(x, y, true)
 	if going_down:
 		$Player.set_map_x(7)
 		$Player.set_map_y(7)
@@ -106,9 +112,13 @@ func gen_home(going_down: bool) -> void:
 	stairs.set_map_x(7)
 	stairs.set_map_y(0)
 
-func gen_map(going_down: bool) -> void:
+func gen_map(going_down: bool, render: bool = true) -> void:
+	init_cells()
 	if floor_num == 0:
 		gen_home(going_down)
+		show_tiles()
+		if render:
+			render_map()
 		return
 	map_seed = seeds[floor_num - 1]
 	var rooms: Array = []
@@ -139,7 +149,7 @@ func gen_map(going_down: bool) -> void:
 	while i < rooms.size():
 		for y in rooms[i][3]:
 			for x in rooms[i][2]:
-				$TileMap.set_cell(rooms[i][0] + x, rooms[i][1] + y, 0)
+				set_cell(rooms[i][0] + x, rooms[i][1] + y, true)
 		i += 1
 	for h in height / 2:
 		for w in width / 2:
@@ -148,12 +158,15 @@ func gen_map(going_down: bool) -> void:
 	var dead_ends: Array = get_dead_ends()
 	while dead_ends.size() != 0:
 		for d in dead_ends:
-			$TileMap.set_cell(d[0], d[1], -1)
+			set_cell(d[0], d[1], false)
 		dead_ends = get_dead_ends()
 	if saved_entities[floor_num] == []:
 		populate(rooms)
 	else:
 		load_entities(saved_entities[floor_num], going_down)
+	show_tiles()
+	if render:
+		render_map()
 
 func populate(rooms: Array) -> void:
 	var exit_index: int = random_int() % (rooms.size() - 1)
@@ -216,6 +229,24 @@ func load_entities(entities: Array, going_down: bool) -> void:
 		entity.set_map_y(e[2])
 		entity.set_hp(e[3])
 
+func init_cells() -> void:
+	cells.clear()
+	for i in width * height:
+		cells.append(false)
+	if shown_tiles[floor_num] == []:
+		shown_tiles[floor_num] = cells.duplicate()
+
+func get_cell(x: int, y: int) -> bool:
+	if x < 0 or y < 0 or x >= width or y >= height:
+		return false
+	return cells[x + y * width]
+
+func set_cell(x: int, y: int, b: bool) -> void:
+	cells[x + y * width] = b
+
+func is_ground(x: int, y: int) -> bool:
+	return get_cell(x, y)
+
 func is_in_room(x: int, y: int, rooms: Array) -> bool:
 	for r in rooms:
 		if x >= r[0] and x <= r[0] + r[2] and y >= r[1] and y <= r[1] + r[3]:
@@ -223,52 +254,52 @@ func is_in_room(x: int, y: int, rooms: Array) -> bool:
 	return false
 
 func maze_gen(x: int, y: int, rooms: Array) -> void:
-	if $TileMap.get_cell(x, y) != 0:
-		$TileMap.set_cell(x, y, 0)
+	if !is_ground(x, y):
+		set_cell(x, y, true)
 		var walls: Array = []
-		if y - 2 >= 0 and $TileMap.get_cell(x, y - 2) != 0:
+		if y - 2 >= 0 and !is_ground(x, y - 2):
 			walls.append([x, y - 2])
-		if y + 2 <= height and $TileMap.get_cell(x, y + 2) != 0:
+		if y + 2 <= height and !is_ground(x, y + 2):
 			walls.append([x, y + 2])
-		if x - 2 >= 0 and $TileMap.get_cell(x - 2, y) != 0:
+		if x - 2 >= 0 and !is_ground(x - 2, y):
 			walls.append([x - 2, y])
-		if x + 2 <= width and $TileMap.get_cell(x + 2, y) != 0:
+		if x + 2 <= width and !is_ground(x + 2, y):
 			walls.append([x + 2, y])
 		while !walls.empty():
 			var index: int = random_int() % walls.size()
 			var w: Array = walls[index]
 			walls.remove(index)
-			$TileMap.set_cell(w[0], w[1], 0)
+			set_cell(w[0], w[1], true)
 			var needs_wall: bool = true
 			var dir: Array = [0, 1, 2, 3]
 			while needs_wall and dir.size() > 0:
 				var dir_index: int = random_int() % dir.size()
 				match dir[dir_index]:
 					0:
-						if w[0] - 2 >= 0 and $TileMap.get_cell(w[0] - 2, w[1]) == 0 and !is_in_room(w[0] - 2, w[1], rooms):
-							$TileMap.set_cell(w[0] - 1, w[1], 0)
+						if w[0] - 2 >= 0 and is_ground(w[0] - 2, w[1]) and !is_in_room(w[0] - 2, w[1], rooms):
+							set_cell(w[0] - 1, w[1], true)
 							needs_wall = false
 					1:
-						if w[0] + 2 <= width and $TileMap.get_cell(w[0] + 2, w[1]) == 0 and !is_in_room(w[0] + 2, w[1], rooms):
-							$TileMap.set_cell(w[0] + 1, w[1], 0)
+						if w[0] + 2 <= width and is_ground(w[0] + 2, w[1]) and !is_in_room(w[0] + 2, w[1], rooms):
+							set_cell(w[0] + 1, w[1], true)
 							needs_wall = false
 					2:
-						if w[1] - 2 >= 0 and $TileMap.get_cell(w[0], w[1] - 2) == 0 and !is_in_room(w[0], w[1] - 2, rooms):
-							$TileMap.set_cell(w[0], w[1] - 1, 0)
+						if w[1] - 2 >= 0 and is_ground(w[0], w[1] - 2) and !is_in_room(w[0], w[1] - 2, rooms):
+							set_cell(w[0], w[1] - 1, true)
 							needs_wall = false
 					3:
-						if w[1] + 2 <= height and $TileMap.get_cell(w[0], w[1] + 2) == 0 and !is_in_room(w[0], w[1] + 2, rooms):
-							$TileMap.set_cell(w[0], w[1] + 1, 0)
+						if w[1] + 2 <= height and is_ground(w[0], w[1] + 2) and !is_in_room(w[0], w[1] + 2, rooms):
+							set_cell(w[0], w[1] + 1, true)
 							needs_wall = false
 				dir.remove(dir_index)
 			if !needs_wall:
-				if w[1] - 2 >= 0 and $TileMap.get_cell(w[0], w[1] - 2) != 0 and !walls.has([w[0], w[1] - 2]):
+				if w[1] - 2 >= 0 and !is_ground(w[0], w[1] - 2) and !walls.has([w[0], w[1] - 2]):
 					walls.append([w[0], w[1] - 2])
-				if w[1] + 2 <= height and $TileMap.get_cell(w[0], w[1] + 2) != 0 and !walls.has([w[0], w[1] + 2]):
+				if w[1] + 2 <= height and !is_ground(w[0], w[1] + 2) and !walls.has([w[0], w[1] + 2]):
 					walls.append([w[0], w[1] + 2])
-				if w[0] - 2 >= 0 and $TileMap.get_cell(w[0] - 2, w[1]) != 0 and !walls.has([w[0] - 2, w[1]]):
+				if w[0] - 2 >= 0 and !is_ground(w[0] - 2, w[1]) and !walls.has([w[0] - 2, w[1]]):
 					walls.append([w[0] - 2, w[1]])
-				if w[0] + 2 <= width and $TileMap.get_cell(w[0] + 2, w[1]) != 0 and !walls.has([w[0] + 2, w[1]]):
+				if w[0] + 2 <= width and !is_ground(w[0] + 2, w[1]) and !walls.has([w[0] + 2, w[1]]):
 					walls.append([w[0] + 2, w[1]])
 
 func add_doors(rooms: Array) -> void:
@@ -285,38 +316,38 @@ func add_doors(rooms: Array) -> void:
 		var side: int = dirs[random_int() % dirs.size()]
 		if side == 0 || dirs[random_int() % dirs.size()] == 0:
 			for x in r[2]:
-				if $TileMap.get_cell(r[0] + (x + r[2] / 2) % r[2], r[1] - 2) == 0:
-					$TileMap.set_cell(r[0] + (x + r[2] / 2) % r[2], r[1] - 1, 0)
+				if is_ground(r[0] + (x + r[2] / 2) % r[2], r[1] - 2):
+					set_cell(r[0] + (x + r[2] / 2) % r[2], r[1] - 1, true)
 					break
 		if side == 1 || dirs[random_int() % dirs.size()] == 1:
 			for x in r[2]:
-				if $TileMap.get_cell(r[0] + (x + r[2] / 2) % r[2], r[1] + r[3] + 1) == 0:
-					$TileMap.set_cell(r[0] + (x + r[2] / 2) % r[2], r[1] + r[3], 0)
+				if is_ground(r[0] + (x + r[2] / 2) % r[2], r[1] + r[3] + 1):
+					set_cell(r[0] + (x + r[2] / 2) % r[2], r[1] + r[3], true)
 					break
 		if side == 2 || dirs[random_int() % dirs.size()] == 2:
 			for y in r[3]:
-				if $TileMap.get_cell(r[0] - 2, r[1] + (y + r[3] / 2) % r[3]) == 0:
-					$TileMap.set_cell(r[0] - 1, r[1] + (y + r[3] / 2) % r[3], 0)
+				if is_ground(r[0] - 2, r[1] + (y + r[3] / 2) % r[3]):
+					set_cell(r[0] - 1, r[1] + (y + r[3] / 2) % r[3], true)
 					break
 		if side == 3 || dirs[random_int() % dirs.size()] == 3:
 			for y in r[3]:
-				if $TileMap.get_cell(r[0] + r[2] + 1, r[1] + (y + r[3] / 2) % r[3]) == 0:
-					$TileMap.set_cell(r[0] + r[2], r[1] + (y + r[3] / 2) % r[3], 0)
+				if is_ground(r[0] + r[2] + 1, r[1] + (y + r[3] / 2) % r[3]):
+					set_cell(r[0] + r[2], r[1] + (y + r[3] / 2) % r[3], true)
 					break
 
 func get_dead_ends() -> Array:
 	var result: Array = []
 	for y in height:
 		for x in width:
-			if $TileMap.get_cell(x, y) == 0:
+			if is_ground(x, y):
 				var neighbors: int = 0
-				if x - 1 >= 0 and $TileMap.get_cell(x - 1, y) == 0:
+				if x - 1 >= 0 and is_ground(x - 1, y):
 					neighbors += 1
-				if x + 1 <= width and $TileMap.get_cell(x + 1, y) == 0:
+				if x + 1 < width and is_ground(x + 1, y):
 					neighbors += 1
-				if y - 1 >= 0 and $TileMap.get_cell(x, y - 1) == 0:
+				if y - 1 >= 0 and is_ground(x, y - 1):
 					neighbors += 1
-				if y + 1 <= height and $TileMap.get_cell(x, y + 1) == 0:
+				if y + 1 < height and is_ground(x, y + 1):
 					neighbors += 1
 				if neighbors <= 1:
 					result.append([x, y])
@@ -420,9 +451,6 @@ func increment_time() -> void:
 		year += 9223372023054775807
 	update_time_hud()
 
-func is_ground(x: int, y: int) -> bool:
-	return $TileMap.get_cell(x, y) == 0
-
 func get_world_seed() -> int:
 	return world_seed
 
@@ -454,6 +482,9 @@ func get_saved_entities() -> Array:
 		e.queue_free()
 	return saved_entities
 
+func get_shown_tiles() -> Array:
+	return shown_tiles
+
 func descend() -> void:
 	if floor_num == 15:
 		Global.delete_save()
@@ -463,7 +494,6 @@ func descend() -> void:
 	for e in $Entities.get_children():
 		saved_entities[floor_num].append([e.get_id(), e.get_map_x(), e.get_map_y(), e.get_hp()])
 		e.queue_free()
-	$TileMap.clear()
 	set_floor_num(floor_num + 1)
 	gen_map(true)
 
@@ -472,7 +502,6 @@ func ascend() -> void:
 	for e in $Entities.get_children():
 		saved_entities[floor_num].append([e.get_id(), e.get_map_x(), e.get_map_y(), e.get_hp()])
 		e.queue_free()
-	$TileMap.clear()
 	set_floor_num(floor_num - 1)
 	gen_map(false)
 
@@ -484,7 +513,54 @@ func get_entity_at(x: int, y:int) -> Node:
 			return e
 	return null
 
+func show_tiles() -> void:
+	for tile in $Tiles.get_children():
+		tile.queue_free()
+	var i: int = 0
+	for tile_bool in shown_tiles[floor_num]:
+		if tile_bool:
+			var tile: Tile = tile_class.instance()
+			$Tiles.add_child(tile)
+			tile.set_map_pos(i % width, i / width)
+		i += 1
+
+func render_map() -> void:
+	var fov: int = $Player.get_insight() + 5
+	var q: Array = []
+	var visited: Array = []
+	q.append($Player.get_map_x() + $Player.get_map_y() * width)
+	while !q.empty():
+		var i: int = q.pop_front()
+		var n: Array = [i % width, i / width]
+		visited.append(n[0] + n[1] * width)
+		if is_ground(n[0], n[1]) and !shown_tiles[floor_num][n[0] + n[1] * width]:
+			var tile: Tile = tile_class.instance()
+			$Tiles.add_child(tile)
+			tile.set_map_pos(n[0], n[1])
+			shown_tiles[floor_num][n[0] + n[1] * width] = true
+		if abs($Player.get_map_x() - n[0]) + abs($Player.get_map_y() - n[1]) + 1 <= fov:
+			if !visited.has(n[0] + (n[1] - 1) * width) and !q.has(n[0] + (n[1] - 1) * width):
+				q.append(n[0] + (n[1] - 1) * width)
+			if !visited.has(n[0] + (n[1] + 1) * width) and !q.has(n[0] + (n[1] + 1) * width):
+				q.append(n[0] + (n[1] + 1) * width)
+			if !visited.has(n[0] - 1 + n[1] * width) and !q.has(n[0] - 1 + n[1] * width):
+				q.append(n[0] - 1 + n[1] * width)
+			if !visited.has(n[0] + 1 + n[1] * width) and !q.has(n[0] + 1 + n[1] * width):
+				q.append(n[0] + 1 + n[1] * width)
+	for entity in $Entities.get_children():
+		if abs($Player.get_map_x() - entity.get_map_x()) + abs($Player.get_map_y() - entity.get_map_y()) <= fov:
+			entity.show()
+			var alpha: float = entity.get_modulate().a
+			if alpha < 1.0:
+				$Tween.interpolate_property(entity, "modulate", Color(1.0, 1.0, 1.0, alpha), Color(1.0, 1.0, 1.0, 1.0), (1.0 - alpha) * 0.25, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+		else:
+			var alpha: float = entity.get_modulate().a
+			if alpha > 0.0:
+				$Tween.interpolate_property(entity, "modulate", Color(1.0, 1.0, 1.0, alpha), Color(1.0, 1.0, 1.0, 0.0), alpha * 0.25, Tween.TRANS_BOUNCE, Tween.EASE_IN_OUT)
+	$Tween.start()
+
 func update_entities() -> void:
 	increment_time()
 	for e in $Entities.get_children():
 		e.update()
+	render_map()
