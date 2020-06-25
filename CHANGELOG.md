@@ -1,5 +1,15 @@
 # Temple of Time Changelog
 
+# Version 0.0.3 - 2020-06-25
+### Added
+- Implemented FOV system.
+
+### Changed
+- Combat damage formula changed.
+- Minor graphical improvements.
+
+
+
 ## Version 0.0.2 - 2020-06-24
 ### Added
 - Added save games.
