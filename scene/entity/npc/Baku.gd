@@ -1,4 +1,4 @@
-extends "res://scene/entity/Entity.gd"
+extends Entity
 
 var target: Entity = null
 

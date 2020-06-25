@@ -7,6 +7,7 @@ func _ready() -> void:
 		continue_button.show()
 
 func new_game() -> void:
+	Global.delete_save()
 	Global.set_new_game(true)
 	get_tree().change_scene("res://scene/state/Gameplay.tscn")
 

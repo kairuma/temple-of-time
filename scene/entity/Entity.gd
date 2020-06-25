@@ -83,13 +83,11 @@ func take_damage(damage: int, source: Entity) -> void:
 func die() -> void:
 	queue_free()
 
-func get_weapon_damage() -> int:
-	if melee_attack == 0:
-		return 1
-	return (randi() % melee_attack + 1) * 5
+func get_attack() -> int:
+	return melee_attack + strength + 5 + level
 
 func get_defense() -> int:
-	return 10 + agility + armor_defense
+	return 10 + agility + armor_defense + level
 
 func attack(entity: Entity) -> void:
 	$Tween.interpolate_property(self, "position", get_position(), Vector2(map_x * CELL_SIZE, map_y * CELL_SIZE), TURN_SPEED, Tween.TRANS_CUBIC, Tween.EASE_OUT)
@@ -106,14 +104,11 @@ func attack(entity: Entity) -> void:
 	var crit: int = randi() % 20
 	if crit == 0:
 		return
-	var to_hit: int = randi() % 20 + 1 + strength
+	var to_hit: int = randi() % 20 + 1 + strength + level
 	var damage_mult: float = (21.0 - (entity.get_defense() - to_hit)) / 20.0
-	var damage: int = get_weapon_damage() + strength * 5
-	damage *= damage_mult
-	if damage <= 0:
-		damage = 1
 	if crit == 19:
-		damage *= 2
+		damage_mult *= 1.5
+	var damage: int = max(1, ceil(get_attack() * damage_mult))
 	entity.take_damage(damage, self)
 
 func interact(entity: Entity) -> void:

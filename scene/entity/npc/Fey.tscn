@@ -44,6 +44,9 @@ tracks/0/keys = {
 
 [node name="Fey" instance=ExtResource( 1 )]
 script = ExtResource( 6 )
+strength = -5
+agility = 2
+vitality = -3
 
 [node name="Sprite" type="Sprite" parent="." index="0"]
 position = Vector2( 0, 2 )
