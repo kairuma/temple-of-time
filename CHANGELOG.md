@@ -1,5 +1,9 @@
 # Temple of Time Changelog
 
+# Version 0.0.3a - 2020-06-26
+### Fixed
+- Tile border reveal bug fixed.
+
 # Version 0.0.3 - 2020-06-25
 ### Added
 - Implemented FOV system.

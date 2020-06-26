@@ -539,13 +539,13 @@ func render_map() -> void:
 			tile.set_map_pos(n[0], n[1])
 			shown_tiles[floor_num][n[0] + n[1] * width] = true
 		if abs($Player.get_map_x() - n[0]) + abs($Player.get_map_y() - n[1]) + 1 <= fov:
-			if !visited.has(n[0] + (n[1] - 1) * width) and !q.has(n[0] + (n[1] - 1) * width):
+			if !visited.has(n[0] + (n[1] - 1) * width) and !q.has(n[0] + (n[1] - 1) * width) and n[1] - 1 >= 0:
 				q.append(n[0] + (n[1] - 1) * width)
-			if !visited.has(n[0] + (n[1] + 1) * width) and !q.has(n[0] + (n[1] + 1) * width):
+			if !visited.has(n[0] + (n[1] + 1) * width) and !q.has(n[0] + (n[1] + 1) * width) and n[1] + 1 < height:
 				q.append(n[0] + (n[1] + 1) * width)
-			if !visited.has(n[0] - 1 + n[1] * width) and !q.has(n[0] - 1 + n[1] * width):
+			if !visited.has(n[0] - 1 + n[1] * width) and !q.has(n[0] - 1 + n[1] * width) and n[0] - 1 >= 0:
 				q.append(n[0] - 1 + n[1] * width)
-			if !visited.has(n[0] + 1 + n[1] * width) and !q.has(n[0] + 1 + n[1] * width):
+			if !visited.has(n[0] + 1 + n[1] * width) and !q.has(n[0] + 1 + n[1] * width) and n[0] + 1 < width:
 				q.append(n[0] + 1 + n[1] * width)
 	for entity in $Entities.get_children():
 		if abs($Player.get_map_x() - entity.get_map_x()) + abs($Player.get_map_y() - entity.get_map_y()) <= fov:
